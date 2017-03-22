@@ -1,0 +1,149 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+<fragment
+    xmlns:map="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/map"
+    android:name="com.google.android.gms.maps.SupportMapFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.christantia.googlemap.MapsActivity" />
+
+    <com.wunderlist.slidinglayer.SlidingLayer
+        android:id="@+id/slidingLayer1"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:elevation="2dip"
+        android:visibility="invisible">
+        <LinearLayout
+            android:id="@+id/hotelLayer"
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="#00000000"
+            android:clickable="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:weightSum="1">
+            <android.support.v7.widget.Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="65dp"
+                android:background="@android:color/holo_green_light"
+                android:theme="?attr/actionBarTheme"
+                android:minHeight="?attr/actionBarSize"
+                android:id="@+id/toolbar4"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true">
+
+                <TextView
+                    android:text="Eateries"
+                    android:layout_width="180dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView2"
+                    android:fontFamily="casual"
+                    android:textSize="30sp"
+                    android:textStyle="normal|bold"
+                    android:textAlignment="viewStart" />
+            </android.support.v7.widget.Toolbar>
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="250dp">
+                <LinearLayout
+                    android:id="@+id/destination_list"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp">
+                </LinearLayout>
+            </ScrollView>
+        </LinearLayout>
+
+    </com.wunderlist.slidinglayer.SlidingLayer>
+    <android.support.v7.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:background="@android:color/holo_green_light"
+        android:theme="?attr/actionBarTheme"
+        android:minHeight="?attr/actionBarSize"
+        android:id="@+id/toolbar"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
+        <View
+            android:id="@+id/hotel"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/hotel"
+            android:layout_marginStart="10dp"
+            android:layout_centerInParent="true"/>
+        <View
+            android:id="@+id/eateries"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/restaurant"
+            android:layout_marginStart="25dp"
+            android:layout_centerInParent="true"/>
+        <View
+            android:id="@+id/park"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/park"
+            android:layout_marginStart="20dp"
+            android:layout_centerInParent="true"/>
+        <View
+            android:id="@+id/museum"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/museum"
+            android:layout_marginStart="20dp"
+            android:layout_centerInParent="true"/>
+        <View
+            android:id="@+id/sport"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/sport"
+            android:layout_marginStart="20dp"
+            android:layout_centerInParent="true"/>
+        <View
+            android:id="@+id/search"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:background="@drawable/search"
+            android:layout_marginStart="20dp"
+            android:layout_centerInParent="true"/>
+    </android.support.v7.widget.Toolbar>
+
+    <android.support.v7.widget.Toolbar
+        android:layout_width="360dp"
+        android:layout_height="wrap_content"
+        android:background="@android:color/holo_green_dark"
+        android:theme="?attr/actionBarTheme"
+        android:minHeight="40dp"
+        android:id="@+id/toolbarSearch"
+        android:elevation="1dp"
+        android:layout_below="@+id/toolbar"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:visibility="invisible">
+            <!--<SearchView
+                android:id="@+id/searchBar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/toolbar2"
+                android:layout_alignParentStart="true"
+                android:layout_alignBottom="@+id/toolbar3"/>-->
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textCapSentences"
+            android:hint="Search by Name"
+            android:ems="10"
+            android:id="@+id/editText"
+            android:layout_weight="1"
+            android:layout_centerInParent="true"/>
+    </android.support.v7.widget.Toolbar>
+
+
+
+</RelativeLayout>
