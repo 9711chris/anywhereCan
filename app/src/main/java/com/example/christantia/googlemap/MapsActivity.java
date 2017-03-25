@@ -3,6 +3,7 @@ package com.example.christantia.googlemap;
 import android.*;
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -16,10 +17,15 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -41,6 +47,8 @@ import com.wunderlist.slidinglayer.transformer.AlphaTransformer;
 import com.wunderlist.slidinglayer.transformer.RotationTransformer;
 import com.wunderlist.slidinglayer.transformer.SlideJoyTransformer;
 
+import java.util.ArrayList;
+
 public class MapsActivity extends AppCompatActivity implements
         GoogleMap.OnMyLocationButtonClickListener,
         OnMapReadyCallback,
@@ -49,6 +57,16 @@ public class MapsActivity extends AppCompatActivity implements
     private GoogleMap mMap;
     private UiSettings mUiSettings;
     private SlidingLayer mSlidingLayer;
+    private RelativeLayout directions;
+
+   /* public enum Toolbars {
+        HOTELS(R.id.toolbarTop), EATERIES(R.id.toolbarTop), PARK(R.id.toolbarTop), YAHOO(20), ATT(25);
+        private int value;
+
+        private Toolbars(int value) {
+            this.value = value;
+        }
+    }*/
 
     private final static String TAG="Debug";
     private LocationManager locationManager;
@@ -60,9 +78,20 @@ public class MapsActivity extends AppCompatActivity implements
     private View search;
     private View searchBar;
     private View hotel;
+    private View eateries;
+    private View park;
+    private View museum;
+    private View sport;
+    private Toolbar toolbarTop;
+    private TextView titleBar;
     private LinearLayout hotelLayer;
     private LatLng updatedLng;
+    AlertDialog.Builder builder;
+    private String tobeShownonMap;
+    private String toPutonPlan;
     int i = 0;
+    ArrayList<DestinationInfo> infos = new ArrayList<DestinationInfo>();
+    ArrayList<View[]> infoItem = new ArrayList<View[]>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,10 +123,10 @@ public class MapsActivity extends AppCompatActivity implements
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
             layoutParams.setMargins(0, 0, 300, 300);
         }
+        bindViews();
+        initState();
 
 
-        search = (View) findViewById(R.id.search);
-        searchBar = (View) findViewById(R.id.toolbarSearch);
         search.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (searchBar.getVisibility() == View.INVISIBLE) {
@@ -107,26 +136,103 @@ public class MapsActivity extends AppCompatActivity implements
                 }
             }
         });
-        //android.app.FragmentManager fragmentManager = getFragmentManager();
-        /*FragmentManager fragmentManager = (android.getFragmentManager();
-        FragmentManager.saveFragmentInstanceState((Fragment) mapFragment);
-        fragmentManager.saveFragmentInstanceState((android.app.Fragment) mapFragment);*/
-        bindViews();
-        initState();
 
-        hotel = (View) findViewById(R.id.hotel);
+
+        //initialize back key
+        builder = new AlertDialog.Builder(this);
+        builder.setMessage("Do you want to exit the application?");
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                finish();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User cancelled the dialog
+            }
+        });
+
+
+
+        //initialize lists
+        LinearLayout list = (LinearLayout) findViewById(R.id.destination_list);
+
+        //add new list item programatically + code the buttons
+        addNewItemInList(list, R.drawable.search, "Name", "Address", "Opening Hours"); //dummy content
+
+        //initialize list first and show using this iteration
+        /*for (DestinationInfo cur : infos)
+            addNewItemInList(list, cur.getPictureId(), cur.getName(), cur.getAddress(), cur.getOpeningHour());*/
+
+        //initalize buttons
         hotel.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (mSlidingLayer.getVisibility() == View.INVISIBLE) {
+                returnToMap();
+                if (toolbarTop.getVisibility() == View.INVISIBLE) {
                     mSlidingLayer.setVisibility(View.VISIBLE);
+                    titleBar.setText("Hotels");
+                    toolbarTop.setVisibility(View.VISIBLE);
                 } else {
                     mSlidingLayer.setVisibility(View.INVISIBLE);
+                    toolbarTop.setVisibility(View.INVISIBLE);
                 }
-                /*hotelLayer = (LinearLayout) findViewById(R.id.hotelLayer);
-                hotelLayer.setVisibility(View.VISIBLE);*/
-                /*Intent intent = new Intent();
-                intent.setClass(MapsActivity.this, DrawerActivity.class);
-                startActivityForResult(intent, DRAWER_REQCODE);*/
+
+            }
+        });
+        eateries.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                returnToMap();
+                if (mSlidingLayer.getVisibility() == View.INVISIBLE) {
+                    mSlidingLayer.setVisibility(View.VISIBLE);
+                    titleBar.setText("Eateries");
+                    toolbarTop.setVisibility(View.VISIBLE);
+                } else {
+                    mSlidingLayer.setVisibility(View.INVISIBLE);
+                    toolbarTop.setVisibility(View.INVISIBLE);
+                }
+
+            }
+        });
+        park.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                returnToMap();
+                if (mSlidingLayer.getVisibility() == View.INVISIBLE) {
+                    mSlidingLayer.setVisibility(View.VISIBLE);
+                    titleBar.setText("Parks");
+                    toolbarTop.setVisibility(View.VISIBLE);
+                } else {
+                    mSlidingLayer.setVisibility(View.INVISIBLE);
+                    toolbarTop.setVisibility(View.INVISIBLE);
+                }
+
+            }
+        });
+        museum.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                returnToMap();
+                if (mSlidingLayer.getVisibility() == View.INVISIBLE) {
+                    mSlidingLayer.setVisibility(View.VISIBLE);
+                    titleBar.setText("Museums");
+                    toolbarTop.setVisibility(View.VISIBLE);
+                } else {
+                    mSlidingLayer.setVisibility(View.INVISIBLE);
+                    toolbarTop.setVisibility(View.INVISIBLE);
+                }
+
+            }
+        });
+        sport.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                returnToMap();
+                if (mSlidingLayer.getVisibility() == View.INVISIBLE) {
+                    mSlidingLayer.setVisibility(View.VISIBLE);
+                    titleBar.setText("Sports");
+                    toolbarTop.setVisibility(View.VISIBLE);
+                } else {
+                    mSlidingLayer.setVisibility(View.INVISIBLE);
+                    toolbarTop.setVisibility(View.INVISIBLE);
+                }
+
             }
         });
 
@@ -134,8 +240,25 @@ public class MapsActivity extends AppCompatActivity implements
     }
 
     private void bindViews() {
+        //Sliding layer for destination lists
         mSlidingLayer = (SlidingLayer) findViewById(R.id.slidingLayer1);
+        //View for direction rundown
+        directions = (RelativeLayout) findViewById(R.id.directions);
+        //Search feature
+        search = findViewById(R.id.search);
+        searchBar = findViewById(R.id.toolbarSearch);
+        //Menu
+        hotel = findViewById(R.id.hotel);
+        eateries = findViewById(R.id.eateries);
+        park = findViewById(R.id.park);
+        museum = findViewById(R.id.museum);
+        sport = findViewById(R.id.sport);
+
+        //Destination Lists' title
+        toolbarTop = (Toolbar) findViewById(R.id.toolbarTop);
+        titleBar = (TextView) findViewById(R.id.titleBar);
     }
+
     private void initState() {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -143,33 +266,36 @@ public class MapsActivity extends AppCompatActivity implements
         RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) mSlidingLayer.getLayoutParams();
         mSlidingLayer.setStickTo(SlidingLayer.STICK_TO_TOP);
         mSlidingLayer.setLayoutParams(rlp);
+        mSlidingLayer.setShadowDrawable(R.drawable.sidebar_shadow);
         
         mSlidingLayer.setOffsetDistance(getResources().getDimensionPixelOffset(R.dimen.offset_distance));
         mSlidingLayer.setPreviewOffsetDistance(getResources().getDimensionPixelOffset(R.dimen.preview_offset_distance));
     }
 
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
-                if (mSlidingLayer.isOpened()) {
-                    mSlidingLayer.closeLayer(true);
+                Log.d(TAG, "in back onkeydown");
+                if (toolbarTop.getVisibility() == View.VISIBLE
+                        || searchBar.getVisibility() == View.VISIBLE
+                        || directions.getVisibility()==View.VISIBLE) {
+                    returnToMap();
                     return true;
                 }
-
+                else {
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+                break;
             default:
+                Log.d(TAG, "in default onkeydown");
                 return super.onKeyDown(keyCode, event);
         }
+        return true;
     }
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.d(TAG, "inside map ready");
@@ -201,8 +327,6 @@ public class MapsActivity extends AppCompatActivity implements
         mMap.setOnMyLocationButtonClickListener(this);
         enableMyLocation();
 
-
-
         // Add a marker in Sydney and move the camera
 
         /*LatLng singapore = new LatLng(1.3521, 103.8198);
@@ -221,6 +345,11 @@ public class MapsActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public boolean onMyLocationButtonClick() {
         // Return false so that we don't consume the event and the default behavior still occurs
         // (the camera animates to the user's current position).
@@ -232,12 +361,6 @@ public class MapsActivity extends AppCompatActivity implements
                 .newInstance(true).show(getSupportFragmentManager(), "dialog");
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == DRAWER_REQCODE && resultCode == RESULT_OK && data != null) {
-
-        }
-    }
 
     private void enableMyLocation() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -266,6 +389,110 @@ public class MapsActivity extends AppCompatActivity implements
             // Display the missing permission error dialog when the fragments resume.
             mPermissionDenied = true;
         }
+    }
+
+    private boolean addNewItemInList(LinearLayout list, int pictureId, String name, final String address, String openingHours){
+        LinearLayout a = new LinearLayout(this);
+        a.setOrientation(LinearLayout.HORIZONTAL);
+        DestinationInfo info = new DestinationInfo(pictureId, name, address,openingHours);
+        DestinationListView view = new DestinationListView(this, info);
+        view.setBackgroundColor(0xffe6ffd8);
+        view.setLayoutParams(new LinearLayout.LayoutParams(Toolbar.LayoutParams.MATCH_PARENT, Toolbar.LayoutParams.WRAP_CONTENT));
+        a.addView(view);
+        list.addView(a);
+        View plus = ((ViewGroup)view).getChildAt(2);
+        plus.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.d(TAG, "onTouch entered");
+                returnToMap();
+                toPutonPlan = address;
+                return true;
+            }
+        });
+        View arrow = ((ViewGroup)view).getChildAt(3);
+        arrow.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.d(TAG, "onTouch entered");
+                returnToMap();
+                tobeShownonMap = address;
+                showDirectionOnMap(tobeShownonMap);
+                return true;
+            }
+        });
+        return false;
+    }
+
+    private void returnToMap(){
+
+        if (mSlidingLayer.isOpened()) {
+            mSlidingLayer.closeLayer(true);
+        }
+        mSlidingLayer.setVisibility(View.INVISIBLE);
+        toolbarTop.setVisibility(View.INVISIBLE);
+        searchBar.setVisibility(View.INVISIBLE);
+        directions.setVisibility(View.INVISIBLE);
+    }
+
+    private void showDirectionOnMap(final String tobeShownonMap){
+        //process address string through geolocation + show onmap
+
+        //initialize relative layout
+        View back = (View) findViewById(R.id.back);
+        View addPlan = (View) findViewById(R.id.addPlan);
+        back.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                directions.setVisibility(View.INVISIBLE);
+                return true;
+            }
+        });
+        addPlan.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                toPutonPlan = tobeShownonMap;
+                return true;
+            }
+        });
+
+        //list out directions
+        final LinearLayout directionList = (LinearLayout) findViewById(R.id.directionList);
+        View walking = findViewById(R.id.walking);
+        View publicTrans = findViewById(R.id.publictrans);
+        View car = findViewById(R.id.car);
+        //create 3 arrays, each for
+        //iterate through direction list create textviews in array
+        final TextView tv = new TextView(this); //dummy content
+        tv.setTextSize(20);
+        tv.setText("Direction");
+        LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(Toolbar.LayoutParams.WRAP_CONTENT, Toolbar.LayoutParams.WRAP_CONTENT);
+        layout.setMargins(10,10,0,0);
+        tv.setLayoutParams(layout);
+        //add different array according to option clicked
+        walking.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(tv.getParent()!=null)
+                    ((ViewGroup)tv.getParent()).removeView(tv); //
+                directionList.addView(tv);
+                return true;
+            }
+        });
+        publicTrans.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+        car.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+
+        directions.setVisibility(View.VISIBLE);
     }
 
 }
