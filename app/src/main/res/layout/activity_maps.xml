@@ -85,6 +85,15 @@
             android:textSize="30sp"
             android:textStyle="normal|bold"
             android:textAlignment="viewStart" />
+        <Button
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:layout_marginRight="0dp"
+            android:text="Back"
+            android:elevation="3dp"
+            android:layout_marginLeft="100dp" />
     </android.support.v7.widget.Toolbar>
 
     <android.support.v7.widget.Toolbar
@@ -203,6 +212,7 @@
         android:layout_alignParentEnd="true"
         android:visibility="invisible"
         android:layout_below="@+id/toolbar">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"

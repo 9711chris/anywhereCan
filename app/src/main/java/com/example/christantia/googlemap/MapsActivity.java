@@ -33,6 +33,9 @@ import android.widget.Toast;
 
 import android.location.LocationManager;
 import android.location.LocationListener;
+
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -75,6 +78,7 @@ public class MapsActivity extends AppCompatActivity implements
     private static final long MIN_TIME = 400;
     private static final float MIN_DISTANCE = 1000;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private GoogleApiClient mGoogleApiClient;
     private View search;
     private View searchBar;
     private View hotel;
@@ -123,6 +127,13 @@ public class MapsActivity extends AppCompatActivity implements
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
             layoutParams.setMargins(0, 0, 300, 300);
         }
+        /*if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }*/
         bindViews();
         initState();
 
@@ -152,6 +163,12 @@ public class MapsActivity extends AppCompatActivity implements
             }
         });
 
+        Button back = (Button) findViewById(R.id.back);
+        back.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                returnToMap();
+            }
+        });
 
 
         //initialize lists
@@ -168,71 +185,36 @@ public class MapsActivity extends AppCompatActivity implements
         hotel.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 returnToMap();
-                if (toolbarTop.getVisibility() == View.INVISIBLE) {
-                    mSlidingLayer.setVisibility(View.VISIBLE);
-                    titleBar.setText("Hotels");
-                    toolbarTop.setVisibility(View.VISIBLE);
-                } else {
-                    mSlidingLayer.setVisibility(View.INVISIBLE);
-                    toolbarTop.setVisibility(View.INVISIBLE);
-                }
-
+                //intialize(1);
+                //resetslidinglayer;
+                setClicks("Hotels");
             }
         });
+        //plan : list
         eateries.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 returnToMap();
-                if (mSlidingLayer.getVisibility() == View.INVISIBLE) {
-                    mSlidingLayer.setVisibility(View.VISIBLE);
-                    titleBar.setText("Eateries");
-                    toolbarTop.setVisibility(View.VISIBLE);
-                } else {
-                    mSlidingLayer.setVisibility(View.INVISIBLE);
-                    toolbarTop.setVisibility(View.INVISIBLE);
-                }
+                //intialize(2);
+                setClicks("Eateries");
 
             }
         });
         park.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 returnToMap();
-                if (mSlidingLayer.getVisibility() == View.INVISIBLE) {
-                    mSlidingLayer.setVisibility(View.VISIBLE);
-                    titleBar.setText("Parks");
-                    toolbarTop.setVisibility(View.VISIBLE);
-                } else {
-                    mSlidingLayer.setVisibility(View.INVISIBLE);
-                    toolbarTop.setVisibility(View.INVISIBLE);
-                }
-
+                setClicks("Parks");
             }
         });
         museum.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 returnToMap();
-                if (mSlidingLayer.getVisibility() == View.INVISIBLE) {
-                    mSlidingLayer.setVisibility(View.VISIBLE);
-                    titleBar.setText("Museums");
-                    toolbarTop.setVisibility(View.VISIBLE);
-                } else {
-                    mSlidingLayer.setVisibility(View.INVISIBLE);
-                    toolbarTop.setVisibility(View.INVISIBLE);
-                }
-
+                setClicks("Museums");
             }
         });
         sport.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 returnToMap();
-                if (mSlidingLayer.getVisibility() == View.INVISIBLE) {
-                    mSlidingLayer.setVisibility(View.VISIBLE);
-                    titleBar.setText("Sports");
-                    toolbarTop.setVisibility(View.VISIBLE);
-                } else {
-                    mSlidingLayer.setVisibility(View.INVISIBLE);
-                    toolbarTop.setVisibility(View.INVISIBLE);
-                }
-
+                setClicks("Sports");
             }
         });
 
@@ -267,7 +249,7 @@ public class MapsActivity extends AppCompatActivity implements
         mSlidingLayer.setStickTo(SlidingLayer.STICK_TO_TOP);
         mSlidingLayer.setLayoutParams(rlp);
         mSlidingLayer.setShadowDrawable(R.drawable.sidebar_shadow);
-        
+
         mSlidingLayer.setOffsetDistance(getResources().getDimensionPixelOffset(R.dimen.offset_distance));
         mSlidingLayer.setPreviewOffsetDistance(getResources().getDimensionPixelOffset(R.dimen.preview_offset_distance));
     }
@@ -298,6 +280,7 @@ public class MapsActivity extends AppCompatActivity implements
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        //mGoogleApiClient.connect();
         Log.d(TAG, "inside map ready");
         mMap = googleMap;
 
@@ -319,7 +302,7 @@ public class MapsActivity extends AppCompatActivity implements
             public void onMyLocationChange(Location arg0) {
                 updatedLng = new LatLng(arg0.getLatitude(), arg0.getLongitude());
                 //mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(arg0.getLatitude(), arg0.getLongitude())));
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(updatedLng, 13.0f));
+
             }
         });
 
@@ -329,9 +312,12 @@ public class MapsActivity extends AppCompatActivity implements
 
         // Add a marker in Sydney and move the camera
 
-        /*LatLng singapore = new LatLng(1.3521, 103.8198);
-        mMap.addMarker(new MarkerOptions().position(singapore).title("Marker in Singapore"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(singapore));*/
+        LatLng singapore = new LatLng(1.3521, 103.8198);
+        //LatLng current = new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude());
+        //mMap.addMarker(new MarkerOptions().position(singapore).title("Marker in Singapore"));
+        //Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (updatedLng != null)
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(updatedLng, 13.0f));
     }
 
     @Override
@@ -493,6 +479,34 @@ public class MapsActivity extends AppCompatActivity implements
         });
 
         directions.setVisibility(View.VISIBLE);
+    }
+
+    private void setClicks(String type){
+        if (mSlidingLayer.getVisibility() == View.INVISIBLE) {
+            titleBar.setText(type);
+            toolbarTop.setVisibility(View.VISIBLE);
+            switch (type){
+                case "Hotels":
+                    mSlidingLayer.setVisibility(View.VISIBLE);
+                    break;
+                case "Eateries":
+                    mSlidingLayer.setVisibility(View.VISIBLE);
+                    break;
+                case "Parks":
+                    mSlidingLayer.setVisibility(View.VISIBLE);
+                    break;
+                case "Museums":
+                    mSlidingLayer.setVisibility(View.VISIBLE);
+                    break;
+                case "Sports":
+                    mSlidingLayer.setVisibility(View.VISIBLE);
+                    break;
+            }
+        }
+        else {
+            mSlidingLayer.setVisibility(View.INVISIBLE);
+            toolbarTop.setVisibility(View.INVISIBLE);
+        }
     }
 
 }
