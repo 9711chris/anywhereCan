@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -22,14 +23,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.support.design.widget.BottomSheetDialog;
 
 import android.location.LocationManager;
 import android.location.LocationListener;
@@ -96,6 +102,15 @@ public class MapsActivity extends AppCompatActivity implements
     int i = 0;
     ArrayList<DestinationInfo> infos = new ArrayList<DestinationInfo>();
     ArrayList<View[]> infoItem = new ArrayList<View[]>();
+
+    //shelina's
+    private Button newButton;
+
+    private static int buttonPlanId = 0;
+
+    private static int bottomSheetId = 0;
+
+    private ArrayList<DestinationItem> destinationList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -218,6 +233,20 @@ public class MapsActivity extends AppCompatActivity implements
             }
         });
 
+        this.generateDestinationList();
+
+        RelativeLayout planTab = (RelativeLayout) findViewById(R.id.plan_bar);
+
+        planTab.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                View replace = findViewById(R.id.plan_bar);
+                ViewGroup parent = (ViewGroup) replace.getParent();
+                int index = parent.indexOfChild(replace);
+                parent.removeView(replace);
+                replace = getLayoutInflater().inflate(R.layout.plan_bar, parent, false);
+                parent.addView(replace, index);
+            }
+        });
 
     }
 
@@ -283,7 +312,7 @@ public class MapsActivity extends AppCompatActivity implements
         //mGoogleApiClient.connect();
         Log.d(TAG, "inside map ready");
         mMap = googleMap;
-
+        mMap.setPadding(0,0,0,150);
         mUiSettings = (UiSettings) mMap.getUiSettings();
 
         // Keep the UI Settings state in sync with the checkboxes.
@@ -296,15 +325,15 @@ public class MapsActivity extends AppCompatActivity implements
         mUiSettings.setTiltGesturesEnabled(true);
         mUiSettings.setRotateGesturesEnabled(true);
 
-        mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-
-            @Override
-            public void onMyLocationChange(Location arg0) {
-                updatedLng = new LatLng(arg0.getLatitude(), arg0.getLongitude());
-                //mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(arg0.getLatitude(), arg0.getLongitude())));
-
-            }
-        });
+//        mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+//
+//            @Override
+//            public void onMyLocationChange(Location arg0) {
+//                updatedLng = new LatLng(arg0.getLatitude(), arg0.getLongitude());
+//                //mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(arg0.getLatitude(), arg0.getLongitude())));
+//
+//            }
+//        });
 
 
         mMap.setOnMyLocationButtonClickListener(this);
@@ -316,8 +345,8 @@ public class MapsActivity extends AppCompatActivity implements
         //LatLng current = new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude());
         //mMap.addMarker(new MarkerOptions().position(singapore).title("Marker in Singapore"));
         //Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (updatedLng != null)
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(updatedLng, 13.0f));
+        //if (updatedLng != null)
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(singapore, 10.0f));
     }
 
     @Override
@@ -508,5 +537,119 @@ public class MapsActivity extends AppCompatActivity implements
             toolbarTop.setVisibility(View.INVISIBLE);
         }
     }
+    public void generateDestinationList(){
+        DestinationItem item1 = new DestinationItem("destination1","123","456");
+        DestinationItem item2 = new DestinationItem("destination2","789","123");
+        DestinationItem item3 = new DestinationItem("destination3","456","789");
+        DestinationItem item4 = new DestinationItem("destination4","123","789");
+        DestinationItem item5 = new DestinationItem("destination5","456","123");
+        destinationList.add(item1);
+        destinationList.add(item2);
+        destinationList.add(item3);
+        destinationList.add(item4);
+        destinationList.add(item5);
+    }
 
+    public void openTab(View view){
+
+        returnToMap();
+        bottomSheetId = view.getId();
+        ViewGroup parent = (ViewGroup) findViewById(R.id.plan_bar_new);
+        Button btnToSheet = (Button) parent.findViewById(bottomSheetId);
+
+        ArrayAdapter<DestinationItem> destinationAdapter =
+                new ArrayAdapter<DestinationItem>(this,
+                        R.layout.destination_list,
+                        R.id.destination_name,
+                        destinationList
+                );
+
+        if(btnToSheet != null) {
+
+            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+            LayoutInflater inflater = this.getLayoutInflater();
+            View bottomSheetView = null;
+
+            if(btnToSheet.equals((Button) findViewById(R.id.plan1))){
+
+                ListView destinationListView = new ListView(this);
+                destinationListView.setAdapter(destinationAdapter);
+
+                bottomSheetView = inflater.inflate(R.layout.plan_window_1, null);
+
+                LinearLayout ll = (LinearLayout) bottomSheetView.findViewById(R.id.destination);
+                Button replace = (Button)ll.findViewById(R.id.btn_save);
+                ll.removeView(replace);
+                ll.addView(destinationListView);
+                ll.addView(replace);
+
+                destinationListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                        // Generate a message based on the position
+                        String message = "You clicked on " + destinationList.get(position).getDestinationName();
+                        Toast toast = Toast.makeText(MapsActivity.this, message, Toast.LENGTH_SHORT);
+                        toast.show();
+
+                    }
+                });
+            }
+
+            else {
+                switch(bottomSheetId){
+                    case 1:
+                        bottomSheetView = inflater.inflate(R.layout.bottom_sheet_2, null);
+                        break;
+                    case 2:
+                        bottomSheetView = inflater.inflate(R.layout.bottom_sheet_3, null);
+                        break;
+                    case 3:
+                        bottomSheetView = inflater.inflate(R.layout.bottom_sheet_4, null);
+                        break;
+                }
+            }
+
+            bottomSheetDialog.setContentView(bottomSheetView);
+
+            BottomSheetBehavior mBehavior = BottomSheetBehavior.from((View) bottomSheetView.getParent());
+            mBehavior.setPeekHeight(500);
+
+            bottomSheetDialog.show();
+        }
+    }
+
+    public void newPlan(View view){
+        View addPlan = findViewById(R.id.new_plan);
+        ViewGroup parent = (ViewGroup) addPlan.getParent();
+        int index = parent.indexOfChild(addPlan);
+        Button template = (Button) findViewById(R.id.plan1);
+        ViewGroup.LayoutParams params = template.getLayoutParams();
+
+        if(buttonPlanId<3) {
+            parent.removeView(addPlan);
+            newButton = new Button(this);
+            newButton.setLayoutParams(params);
+            /*
+            newButton.setBackgroundColor(0x27ae60);
+            newButton.setAllCaps(true);
+            newButton.setTextColor(0x2c3e50);
+            newButton.setTypeface(Typeface.DEFAULT_BOLD);
+            */
+            newButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    openTab(v);
+                }
+            });
+
+            buttonPlanId ++;
+
+            newButton.setId(buttonPlanId);
+            String buttonText = "Plan " + (buttonPlanId+1);
+            newButton.setText(buttonText);
+            parent.addView(newButton);
+            if(buttonPlanId!=3) parent.addView(addPlan);
+            if(buttonPlanId==3) buttonPlanId=0;
+        }
+    }
 }
