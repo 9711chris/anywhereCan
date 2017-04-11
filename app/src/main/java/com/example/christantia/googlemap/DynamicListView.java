@@ -30,7 +30,7 @@ import java.util.ArrayList;
 
 public class DynamicListView extends ListView {
     private final int SMOOTH_SCROLL_AMOUNT_AT_EDGE = 15;
-    private final int MOVE_DURATION = 150;
+    private final int MOVE_DURATION = 50;
     private final int LINE_THICKNESS = 15;
 
     public ArrayList<DestinationItem> mDestinationList;
@@ -98,8 +98,8 @@ public class DynamicListView extends ListView {
                     View selectedView = getChildAt(itemNum);
                     mMobileItemId = getAdapter().getItemId(position);
                     mHoverCell = getAndAddHoverView(selectedView);
-                    selectedView.setVisibility(INVISIBLE);
-
+                    //selectedView.setVisibility(INVISIBLE);
+                    getViewForID(mMobileItemId).setVisibility(View.INVISIBLE);
                     mCellIsMobile = true;
 
                     updateNeighborViewsForID(mMobileItemId);
@@ -294,20 +294,22 @@ public class DynamicListView extends ListView {
             final int originalItem = getPositionForView(mobileView);
 
             if (switchView == null) {
+                System.out.println("ANJENG switchview null");
                 updateNeighborViewsForID(mMobileItemId);
                 return;
             }
 
+            System.out.println("ANJENG now "+getPositionForView(mobileView)+ " switch to "+getPositionForView(switchView));
             swapElements(mDestinationList, originalItem, getPositionForView(switchView));
 
-            ((BaseAdapter) getAdapter()).notifyDataSetChanged();
+            ((PlanListAdapter) getAdapter()).notifyDataSetChanged();
 
             mDownY = mLastEventY;
 
             final int switchViewStartTop = switchView.getTop();
 
-            mobileView.setVisibility(View.VISIBLE);
-            switchView.setVisibility(View.INVISIBLE);
+            //mobileView.setVisibility(View.INVISIBLE);
+            //switchView.setVisibility(View.VISIBLE);
 
             updateNeighborViewsForID(mMobileItemId);
 
@@ -497,6 +499,7 @@ public class DynamicListView extends ListView {
 
             checkAndHandleFirstVisibleCellChange();
             checkAndHandleLastVisibleCellChange();
+           // handleCellSwitch();
 
             mPreviousFirstVisibleItem = mCurrentFirstVisibleItem;
             mPreviousVisibleItemCount = mCurrentVisibleItemCount;
@@ -533,7 +536,7 @@ public class DynamicListView extends ListView {
          */
         public void checkAndHandleFirstVisibleCellChange() {
             if (mCurrentFirstVisibleItem != mPreviousFirstVisibleItem) {
-                if (mCellIsMobile && mMobileItemId != INVALID_ID) {
+                if (mCellIsMobile && mAboveItemId != INVALID_ID) {
                     updateNeighborViewsForID(mMobileItemId);
                     handleCellSwitch();
                 }

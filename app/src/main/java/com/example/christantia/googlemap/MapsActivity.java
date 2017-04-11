@@ -61,6 +61,8 @@ import com.wunderlist.slidinglayer.transformer.SlideJoyTransformer;
 
 import java.util.ArrayList;
 
+import static android.view.ViewGroup.FOCUS_BLOCK_DESCENDANTS;
+
 public class MapsActivity extends AppCompatActivity implements
         GoogleMap.OnMyLocationButtonClickListener,
         OnMapReadyCallback,
@@ -580,8 +582,7 @@ public class MapsActivity extends AppCompatActivity implements
                 destinationListView.setDestinationList(destinationList);
                 destinationListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
                 destinationListView.setAdapter(destinationAdapter);
-                destinationListView.setPadding(0,0,0,10);
-                destinationListView.setClipToPadding(false);
+                destinationListView.setDescendantFocusability(FOCUS_BLOCK_DESCENDANTS);
 
                 bottomSheetView = inflater.inflate(R.layout.plan_window_1, null);
 
@@ -590,6 +591,16 @@ public class MapsActivity extends AppCompatActivity implements
                 ll.removeView(replace);
                 ll.addView(destinationListView);
                 ll.addView(replace);
+
+               destinationListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view,
+                                            int position, long id) {
+
+                        Toast.makeText(getApplicationContext(), "clicked", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
                 destinationListView.setOnTouchListener(new View.OnTouchListener() {
                     // Setting on Touch Listener for handling the touch inside ScrollView
