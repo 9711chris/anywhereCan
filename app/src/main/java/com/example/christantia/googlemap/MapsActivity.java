@@ -22,6 +22,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -30,6 +31,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -61,7 +63,7 @@ import java.util.ArrayList;
 public class MapsActivity extends AppCompatActivity implements
         GoogleMap.OnMyLocationButtonClickListener,
         OnMapReadyCallback,
-        ActivityCompat.OnRequestPermissionsResultCallback{
+        ActivityCompat.OnRequestPermissionsResultCallback {
 
     private GoogleMap mMap;
     private UiSettings mUiSettings;
@@ -77,7 +79,7 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }*/
 
-    private final static String TAG="Debug";
+    private final static String TAG = "Debug";
     private LocationManager locationManager;
     private boolean mPermissionDenied = false;
     private final static int DRAWER_REQCODE = 1;
@@ -233,12 +235,10 @@ public class MapsActivity extends AppCompatActivity implements
             }
         });
 
-        this.generateDestinationList();
-
         RelativeLayout planTab = (RelativeLayout) findViewById(R.id.plan_bar);
 
-        planTab.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
+        planTab.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
                 View replace = findViewById(R.id.plan_bar);
                 ViewGroup parent = (ViewGroup) replace.getParent();
                 int index = parent.indexOfChild(replace);
@@ -291,11 +291,10 @@ public class MapsActivity extends AppCompatActivity implements
                 Log.d(TAG, "in back onkeydown");
                 if (toolbarTop.getVisibility() == View.VISIBLE
                         || searchBar.getVisibility() == View.VISIBLE
-                        || directions.getVisibility()==View.VISIBLE) {
+                        || directions.getVisibility() == View.VISIBLE) {
                     returnToMap();
                     return true;
-                }
-                else {
+                } else {
                     AlertDialog dialog = builder.create();
                     dialog.show();
                 }
@@ -312,14 +311,14 @@ public class MapsActivity extends AppCompatActivity implements
         //mGoogleApiClient.connect();
         Log.d(TAG, "inside map ready");
         mMap = googleMap;
-        mMap.setPadding(0,0,0,150);
+        mMap.setPadding(0, 0, 0, 150);
         mUiSettings = (UiSettings) mMap.getUiSettings();
 
         // Keep the UI Settings state in sync with the checkboxes.
         mUiSettings.setZoomControlsEnabled(true);
         mUiSettings.setCompassEnabled(true);
         mUiSettings.setMyLocationButtonEnabled(true);
-        mMap.setMyLocationEnabled(true);
+        //mMap.setMyLocationEnabled(true);
         mUiSettings.setScrollGesturesEnabled(true);
         mUiSettings.setZoomGesturesEnabled(true);
         mUiSettings.setTiltGesturesEnabled(true);
@@ -406,16 +405,16 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
-    private boolean addNewItemInList(LinearLayout list, int pictureId, String name, final String address, String openingHours){
+    private boolean addNewItemInList(LinearLayout list, int pictureId, String name, final String address, String openingHours) {
         LinearLayout a = new LinearLayout(this);
         a.setOrientation(LinearLayout.HORIZONTAL);
-        DestinationInfo info = new DestinationInfo(pictureId, name, address,openingHours);
+        DestinationInfo info = new DestinationInfo(pictureId, name, address, openingHours);
         DestinationListView view = new DestinationListView(this, info);
         view.setBackgroundColor(0xffe6ffd8);
         view.setLayoutParams(new LinearLayout.LayoutParams(Toolbar.LayoutParams.MATCH_PARENT, Toolbar.LayoutParams.WRAP_CONTENT));
         a.addView(view);
         list.addView(a);
-        View plus = ((ViewGroup)view).getChildAt(2);
+        View plus = ((ViewGroup) view).getChildAt(2);
         plus.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -425,7 +424,7 @@ public class MapsActivity extends AppCompatActivity implements
                 return true;
             }
         });
-        View arrow = ((ViewGroup)view).getChildAt(3);
+        View arrow = ((ViewGroup) view).getChildAt(3);
         arrow.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -439,7 +438,7 @@ public class MapsActivity extends AppCompatActivity implements
         return false;
     }
 
-    private void returnToMap(){
+    private void returnToMap() {
 
         if (mSlidingLayer.isOpened()) {
             mSlidingLayer.closeLayer(true);
@@ -450,7 +449,7 @@ public class MapsActivity extends AppCompatActivity implements
         directions.setVisibility(View.INVISIBLE);
     }
 
-    private void showDirectionOnMap(final String tobeShownonMap){
+    private void showDirectionOnMap(final String tobeShownonMap) {
         //process address string through geolocation + show onmap
 
         //initialize relative layout
@@ -482,14 +481,14 @@ public class MapsActivity extends AppCompatActivity implements
         tv.setTextSize(20);
         tv.setText("Direction");
         LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(Toolbar.LayoutParams.WRAP_CONTENT, Toolbar.LayoutParams.WRAP_CONTENT);
-        layout.setMargins(10,10,0,0);
+        layout.setMargins(10, 10, 0, 0);
         tv.setLayoutParams(layout);
         //add different array according to option clicked
         walking.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(tv.getParent()!=null)
-                    ((ViewGroup)tv.getParent()).removeView(tv); //
+                if (tv.getParent() != null)
+                    ((ViewGroup) tv.getParent()).removeView(tv); //
                 directionList.addView(tv);
                 return true;
             }
@@ -510,11 +509,11 @@ public class MapsActivity extends AppCompatActivity implements
         directions.setVisibility(View.VISIBLE);
     }
 
-    private void setClicks(String type){
+    private void setClicks(String type) {
         if (mSlidingLayer.getVisibility() == View.INVISIBLE) {
             titleBar.setText(type);
             toolbarTop.setVisibility(View.VISIBLE);
-            switch (type){
+            switch (type) {
                 case "Hotels":
                     mSlidingLayer.setVisibility(View.VISIBLE);
                     break;
@@ -531,18 +530,18 @@ public class MapsActivity extends AppCompatActivity implements
                     mSlidingLayer.setVisibility(View.VISIBLE);
                     break;
             }
-        }
-        else {
+        } else {
             mSlidingLayer.setVisibility(View.INVISIBLE);
             toolbarTop.setVisibility(View.INVISIBLE);
         }
     }
-    public void generateDestinationList(){
-        DestinationItem item1 = new DestinationItem("destination1","123","456");
-        DestinationItem item2 = new DestinationItem("destination2","789","123");
-        DestinationItem item3 = new DestinationItem("destination3","456","789");
-        DestinationItem item4 = new DestinationItem("destination4","123","789");
-        DestinationItem item5 = new DestinationItem("destination5","456","123");
+
+    public void generateDestinationList() {
+        DestinationItem item1 = new DestinationItem("destination1", "123", "456");
+        DestinationItem item2 = new DestinationItem("destination2", "789", "123");
+        DestinationItem item3 = new DestinationItem("destination3", "456", "789");
+        DestinationItem item4 = new DestinationItem("destination4", "123", "789");
+        DestinationItem item5 = new DestinationItem("destination5", "456", "123");
         destinationList.add(item1);
         destinationList.add(item2);
         destinationList.add(item3);
@@ -550,72 +549,93 @@ public class MapsActivity extends AppCompatActivity implements
         destinationList.add(item5);
     }
 
-    public void openTab(View view){
+    public void openTab(View view) {
 
         returnToMap();
+
+        this.generateDestinationList();
+
         bottomSheetId = view.getId();
         ViewGroup parent = (ViewGroup) findViewById(R.id.plan_bar_new);
         Button btnToSheet = (Button) parent.findViewById(bottomSheetId);
 
-        ArrayAdapter<DestinationItem> destinationAdapter =
-                new ArrayAdapter<DestinationItem>(this,
+        final PlanListAdapter destinationAdapter =
+                new PlanListAdapter(this,
                         R.layout.destination_list,
                         R.id.destination_name,
                         destinationList
                 );
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View bottomSheetView = null;
 
-        if(btnToSheet != null) {
+        if (btnToSheet != null) {
 
-            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
-            LayoutInflater inflater = this.getLayoutInflater();
-            View bottomSheetView = null;
-
-            if(btnToSheet.equals((Button) findViewById(R.id.plan1))){
-
-                ListView destinationListView = new ListView(this);
+            if (btnToSheet.equals((Button) findViewById(R.id.plan1))) {
+                final ListView destinationListView = new ListView(this);
                 destinationListView.setAdapter(destinationAdapter);
 
                 bottomSheetView = inflater.inflate(R.layout.plan_window_1, null);
 
                 LinearLayout ll = (LinearLayout) bottomSheetView.findViewById(R.id.destination);
-                Button replace = (Button)ll.findViewById(R.id.btn_save);
+                Button replace = (Button) ll.findViewById(R.id.btn_save);
                 ll.removeView(replace);
                 ll.addView(destinationListView);
                 ll.addView(replace);
 
-                destinationListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                        // Generate a message based on the position
-                        String message = "You clicked on " + destinationList.get(position).getDestinationName();
-                        Toast toast = Toast.makeText(MapsActivity.this, message, Toast.LENGTH_SHORT);
-                        toast.show();
+               ImageButton delete = (ImageButton) findViewById(R.id.delete1);
 
-                    }
-                });
-            }
-
-            else {
-                switch(bottomSheetId){
-                    case 1:
-                        bottomSheetView = inflater.inflate(R.layout.bottom_sheet_2, null);
-                        break;
-                    case 2:
-                        bottomSheetView = inflater.inflate(R.layout.bottom_sheet_3, null);
-                        break;
-                    case 3:
-                        bottomSheetView = inflater.inflate(R.layout.bottom_sheet_4, null);
-                        break;
+                if (delete != null) {
+                    delete.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View v) {
+                            deleteItems(v, destinationListView, destinationAdapter, destinationList);
+                        }
+                    });
                 }
             }
-
-            bottomSheetDialog.setContentView(bottomSheetView);
-
-            BottomSheetBehavior mBehavior = BottomSheetBehavior.from((View) bottomSheetView.getParent());
-            mBehavior.setPeekHeight(500);
-
-            bottomSheetDialog.show();
+            else {
+                switch (bottomSheetId) {
+                 case 1:
+                    bottomSheetView = inflater.inflate(R.layout.bottom_sheet_2, null);
+                    break;
+                 case 2:
+                    bottomSheetView = inflater.inflate(R.layout.bottom_sheet_3, null);
+                    break;
+                 case 3:
+                    bottomSheetView = inflater.inflate(R.layout.bottom_sheet_4, null);
+                    break;
+                }
+            }
         }
+
+        bottomSheetDialog.setContentView(bottomSheetView);
+
+        BottomSheetBehavior mBehavior = BottomSheetBehavior.from((View) bottomSheetView.getParent());
+        mBehavior.setPeekHeight(500);
+
+        bottomSheetDialog.show();
+    }
+
+    public void deleteItems(View v, final ListView lv, PlanListAdapter adapter, ArrayList<DestinationItem> data) {
+
+//        int deleteId = v.getId();
+//        ViewGroup parent = (ViewGroup) v.getParent();
+//        Button delete = (Button) parent.findViewById(deleteId);
+
+        SparseBooleanArray checkedItemPositions = lv.getCheckedItemPositions();
+        int itemCount = lv.getCount();
+
+        System.out.println("data delete = " + data.get(i));
+
+        for(int i=0; i <itemCount; i++){
+            if(checkedItemPositions.get(i)){
+                adapter.remove(data.get(i));
+                System.out.println("data delete = " + data.get(i));
+                --i;
+            }
+        }
+        checkedItemPositions.clear();
+        adapter.notifyDataSetChanged();
     }
 
     public void newPlan(View view){

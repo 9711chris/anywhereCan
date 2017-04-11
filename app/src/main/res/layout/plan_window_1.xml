@@ -96,6 +96,7 @@
             <!--android:visibility="gone"/>-->
 
             <ImageButton
+                android:id="@+id/delete1"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/delete"
@@ -104,6 +105,7 @@
                 <!--android:onClick="deleteChecked"-->
 
             <ImageButton
+                android:id="@+id/default1"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/defaultdir"
@@ -111,6 +113,7 @@
                 <!--android:onClick="defaultDirections"-->
 
             <ImageButton
+                android:id="@+id/chain1"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/chain"
@@ -118,6 +121,7 @@
                 <!--android:onClick="chainDirections"-->
 
             <ImageButton
+                android:id="@+id/recommend1"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/recommend"
