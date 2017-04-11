@@ -2,6 +2,7 @@ package com.example.christantia.googlemap.utilities;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
@@ -103,23 +104,28 @@ public class ObtainMapsData {
     public static void saveAllKmlToDb(Context context, LocationsDbHelper mDbHelper) {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
-        for (String filename : listKmlFiles(context)) {
-            try {
-                String kmlString = FilesUtils.readKmlContent(context, filename);
-                for (Map<String, String> entryData : JsonXmlUtils.extractLocationDataXml(kmlString)) {
-                    ContentValues values = new ContentValues();
-                    values.put(LocationsContract.LocationsEntry
-                            .COLUMN_LOCATION_NAME, entryData.get(LocationsContract.LocationsEntry.COLUMN_LOCATION_NAME));
-                    values.put(LocationsContract.LocationsEntry
-                            .COLUMN_LOCATION_TYPE, entryData.get(LocationsContract.LocationsEntry.COLUMN_LOCATION_TYPE));
-                    values.put(LocationsContract.LocationsEntry
-                            .COLUMN_COORDINATES, entryData.get(LocationsContract.LocationsEntry.COLUMN_COORDINATES));
-                    db.insert(LocationsContract.LocationsEntry.TABLE_NAME, null, values);
+        Cursor resultSet = db.rawQuery("SELECT * FROM " + LocationsContract.LocationsEntry.TABLE_NAME, null);
+        resultSet.moveToFirst();
+
+        if (resultSet.isAfterLast()) {
+            for (String filename : listKmlFiles(context)) {
+                try {
+                    String kmlString = FilesUtils.readKmlContent(context, filename);
+                    for (Map<String, String> entryData : JsonXmlUtils.extractLocationDataXml(kmlString)) {
+                        ContentValues values = new ContentValues();
+                        values.put(LocationsContract.LocationsEntry
+                                .COLUMN_LOCATION_NAME, entryData.get(LocationsContract.LocationsEntry.COLUMN_LOCATION_NAME));
+                        values.put(LocationsContract.LocationsEntry
+                                .COLUMN_LOCATION_TYPE, entryData.get(LocationsContract.LocationsEntry.COLUMN_LOCATION_TYPE));
+                        values.put(LocationsContract.LocationsEntry
+                                .COLUMN_COORDINATES, entryData.get(LocationsContract.LocationsEntry.COLUMN_COORDINATES));
+                        db.insert(LocationsContract.LocationsEntry.TABLE_NAME, null, values);
+                    }
+                } catch (XmlPullParserException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (XmlPullParserException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
     }
