@@ -7,12 +7,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import static android.support.v4.widget.ExploreByTouchHelper.INVALID_ID;
 
 /**
  * Created by shelinalusandro on 9/4/17.
@@ -25,6 +29,8 @@ public class PlanListAdapter extends ArrayAdapter<DestinationItem>{
     int destinationId;
     ArrayList<DestinationItem> data = null;
     PlanItem holder;
+    final int INVALID_ID = -1;
+    HashMap<DestinationItem, Integer> mIdMap = new HashMap<DestinationItem, Integer>();
 
     public PlanListAdapter(Context context, int itemTemplateLayout, int destinationId,
                         ArrayList<DestinationItem> data) {
@@ -33,6 +39,32 @@ public class PlanListAdapter extends ArrayAdapter<DestinationItem>{
         this.destinationId = destinationId;
         this.context = context;
         this.data = data;
+        for (int i = 0; i < data.size(); ++i) {
+            mIdMap.put(data.get(i), i);
+        }
+    }
+
+    public int getCount() {
+        return data.size();
+    }
+
+    @Override
+    public DestinationItem getItem(int position) {
+        return data.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        if (position < 0 || position >= mIdMap.size()) {
+            return INVALID_ID;
+        }
+        DestinationItem item = getItem(position);
+        return mIdMap.get(item);
+    }
+
+    @Override
+    public boolean hasStableIds() {
+        return true;
     }
 
     public View getView(final int position, View convertView, ViewGroup parent) {
@@ -63,6 +95,27 @@ public class PlanListAdapter extends ArrayAdapter<DestinationItem>{
         holder.button.setTag(holder);
         String name1 = data.get(position).getDestinationName();
         holder.name.setText(name1);
+
+        holder.check.setOnCheckedChangeListener(null);
+        holder.check.setChecked(MapsActivity.ids.contains(position));
+
+        holder.check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    MapsActivity.ids.add(data.get(position));
+                    System.out.println("IDS A: " + data.toString());
+                } else {
+                    if (MapsActivity.ids.contains(data.get(position))) {
+                        //int i = ids.indexOf(position);
+                        MapsActivity.ids.remove(data.get(position));
+                        System.out.println("IDS R: "+ data.toString());
+                            }
+                        }
+
+                    }
+            });
 
         return row;
     }

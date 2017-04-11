@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -113,6 +114,9 @@ public class MapsActivity extends AppCompatActivity implements
     private static int bottomSheetId = 0;
 
     private ArrayList<DestinationItem> destinationList = new ArrayList<>();
+    private PlanListAdapter destinationAdapter;
+    private DynamicListView destinationListView;
+    static public ArrayList<DestinationItem> ids = new ArrayList<DestinationItem>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -559,7 +563,7 @@ public class MapsActivity extends AppCompatActivity implements
         ViewGroup parent = (ViewGroup) findViewById(R.id.plan_bar_new);
         Button btnToSheet = (Button) parent.findViewById(bottomSheetId);
 
-        final PlanListAdapter destinationAdapter =
+        destinationAdapter =
                 new PlanListAdapter(this,
                         R.layout.destination_list,
                         R.id.destination_name,
@@ -572,8 +576,12 @@ public class MapsActivity extends AppCompatActivity implements
         if (btnToSheet != null) {
 
             if (btnToSheet.equals((Button) findViewById(R.id.plan1))) {
-                final ListView destinationListView = new ListView(this);
+                destinationListView = new DynamicListView(this);
+                destinationListView.setDestinationList(destinationList);
+                destinationListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
                 destinationListView.setAdapter(destinationAdapter);
+                destinationListView.setPadding(0,0,0,10);
+                destinationListView.setClipToPadding(false);
 
                 bottomSheetView = inflater.inflate(R.layout.plan_window_1, null);
 
@@ -583,15 +591,32 @@ public class MapsActivity extends AppCompatActivity implements
                 ll.addView(destinationListView);
                 ll.addView(replace);
 
-               ImageButton delete = (ImageButton) findViewById(R.id.delete1);
+                destinationListView.setOnTouchListener(new View.OnTouchListener() {
+                    // Setting on Touch Listener for handling the touch inside ScrollView
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        // Disallow the touch request for parent scroll on touch of child view
+                        v.getParent().requestDisallowInterceptTouchEvent(true);
+                        return false;
+                    }
+                });
+
+               ImageButton delete = (ImageButton) bottomSheetView.findViewById(R.id.delete1);
 
                 if (delete != null) {
                     delete.setOnClickListener(new View.OnClickListener() {
                         public void onClick(View v) {
-                            deleteItems(v, destinationListView, destinationAdapter, destinationList);
+                            if (ids.size() > 0) {
+                                for (int i = 0; i < ids.size(); i++) {
+                                    destinationList.remove(ids.get(i));
+//                                  items.remove(items.get(adapter.getItemViewType(ids.get(i))));
+//                                  items.remove(adapter.getItemViewType(ids.get(i)));
+                                }
+                                destinationAdapter.notifyDataSetChanged();
+                            }
                         }
                     });
-                }
+               }
             }
             else {
                 switch (bottomSheetId) {
@@ -614,28 +639,6 @@ public class MapsActivity extends AppCompatActivity implements
         mBehavior.setPeekHeight(500);
 
         bottomSheetDialog.show();
-    }
-
-    public void deleteItems(View v, final ListView lv, PlanListAdapter adapter, ArrayList<DestinationItem> data) {
-
-//        int deleteId = v.getId();
-//        ViewGroup parent = (ViewGroup) v.getParent();
-//        Button delete = (Button) parent.findViewById(deleteId);
-
-        SparseBooleanArray checkedItemPositions = lv.getCheckedItemPositions();
-        int itemCount = lv.getCount();
-
-        System.out.println("data delete = " + data.get(i));
-
-        for(int i=0; i <itemCount; i++){
-            if(checkedItemPositions.get(i)){
-                adapter.remove(data.get(i));
-                System.out.println("data delete = " + data.get(i));
-                --i;
-            }
-        }
-        checkedItemPositions.clear();
-        adapter.notifyDataSetChanged();
     }
 
     public void newPlan(View view){
