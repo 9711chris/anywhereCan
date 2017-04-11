@@ -2,6 +2,7 @@ package com.example.christantia.googlemap;
 
 import android.*;
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
@@ -43,6 +45,8 @@ import android.support.design.widget.BottomSheetDialog;
 import android.location.LocationManager;
 import android.location.LocationListener;
 
+import com.example.christantia.googlemap.data.LocationsDbHelper;
+import com.example.christantia.googlemap.utilities.ObtainMapsData;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
@@ -65,6 +69,8 @@ public class MapsActivity extends AppCompatActivity implements
         GoogleMap.OnMyLocationButtonClickListener,
         OnMapReadyCallback,
         ActivityCompat.OnRequestPermissionsResultCallback {
+
+    LocationsDbHelper mDbHelper = new LocationsDbHelper(this);
 
     private GoogleMap mMap;
     private UiSettings mUiSettings;
@@ -118,9 +124,21 @@ public class MapsActivity extends AppCompatActivity implements
     private DynamicListView destinationListView;
     static public ArrayList<DestinationItem> ids = new ArrayList<DestinationItem>();
 
+    private ProgressDialog loading;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        loading = new ProgressDialog(this);
+
+        loading.setMessage("Loading data from internet... Please wait.");
+        loading.setIndeterminate(true);
+        loading.setCanceledOnTouchOutside(false);
+
+
+        new FetchData().execute(this);
+
 
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -673,6 +691,26 @@ public class MapsActivity extends AppCompatActivity implements
             parent.addView(newButton);
             if(buttonPlanId!=3) parent.addView(addPlan);
             if(buttonPlanId==3) buttonPlanId=0;
+        }
+    }
+
+    private class FetchData extends AsyncTask<Context, Void, Void> {
+        @Override
+        protected Void doInBackground(Context... contexts) {
+            ObtainMapsData.saveAllKmlToDb(getApplicationContext(), mDbHelper);
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            loading.show();
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            loading.hide();
         }
     }
 }
