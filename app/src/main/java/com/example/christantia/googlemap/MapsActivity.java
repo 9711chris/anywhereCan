@@ -311,8 +311,9 @@ public class MapsActivity extends AppCompatActivity implements
 
             System.out.println("ANJENG LOKASI: " + latitude + " " + longitude);
             String address = resultSet.getString(4);
-            /*
+            System.out.println("ANJENG adress = "+ address);
             if ( address == null ) {
+
                 Geocoder geoCoder = new Geocoder(getApplicationContext());
                 List<Address> matches = null;
                 try {
@@ -323,11 +324,12 @@ public class MapsActivity extends AppCompatActivity implements
                 Address bestMatch = (matches.isEmpty() ? null : matches.get(0));
                 if(bestMatch!=null)
                     address = bestMatch.getAddressLine(0);
-
-                db.rawQuery("UPDATE " + LocationsContract.LocationsEntry.TABLE_NAME +
+                System.out.println("ANJENG new address = " +address);
+                db.execSQL("UPDATE " + LocationsContract.LocationsEntry.TABLE_NAME +
                         " SET address = \"" + address + "\"" +
-                        " WHERE " +  LocationsContract.LocationsEntry._ID + " = " + resultSet.getInt(0), null);
-            }*/
+                        " WHERE " +  LocationsContract.LocationsEntry._ID + " = " + resultSet.getInt(0) );
+
+            }
 
             if (category.equals("HAWKERCENTRE"))
                 infoHawkers.add(new DestinationInfo(name, address));
