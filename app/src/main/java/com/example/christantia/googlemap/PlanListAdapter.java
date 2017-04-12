@@ -44,6 +44,11 @@ public class PlanListAdapter extends ArrayAdapter<DestinationItem>{
         }
     }
 
+    public void removemIdMap(DestinationItem item)
+    {
+        mIdMap.remove(item);
+    }
+
     public int getCount() {
         return data.size();
     }

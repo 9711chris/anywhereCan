@@ -13,7 +13,8 @@ android:background="@color/destination">
         android:layout_margin="10dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:textSize="16sp"/>
+        android:textSize="16sp"
+        android:focusable="false" />
 
     <CheckBox
         android:layout_width="wrap_content"
@@ -21,7 +22,8 @@ android:background="@color/destination">
         android:id="@+id/checkbox1"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="10dp" />
+        android:layout_marginRight="10dp"
+        android:focusable="false" />
 
     <ImageView
         android:id="@+id/toNavigation"
@@ -30,6 +32,7 @@ android:background="@color/destination">
         android:layout_margin="10dp"
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@id/checkbox1"
-        android:src="@drawable/tonavigation" />
+        android:src="@drawable/tonavigation"
+        android:focusable="false" />
 
 </RelativeLayout>
