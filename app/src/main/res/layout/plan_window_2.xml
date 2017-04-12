@@ -47,7 +47,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="save!"
-                android:id="@+id/btn_save_2"/>
+                android:id="@+id/btn_save_2"
+                android:onClick="savePlan"/>
             <!--android:visibility="gone"/>-->
 
         </LinearLayout>

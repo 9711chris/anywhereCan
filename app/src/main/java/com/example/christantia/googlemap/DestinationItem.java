@@ -5,14 +5,20 @@ package com.example.christantia.googlemap;
  */
 
 public class DestinationItem {
+    private int id;
     private String destinationName;
     private String latitude;
     private String longitude;
 
-    public DestinationItem(String destinationName, String latitude, String longitude){
+    public DestinationItem(int id,String destinationName, String latitude, String longitude){
+        this.id= id;
         this.destinationName = destinationName;
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    public int getId(){
+        return id;
     }
 
     public String getDestinationName(){

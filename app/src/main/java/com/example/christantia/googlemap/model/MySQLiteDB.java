@@ -38,7 +38,8 @@ public class MySQLiteDB implements MyDBInterface {
 
         for (int i=0; i<plan.getDestinationIds().size(); i++) {
             int did = plan.getDestinationIds().get(i);
-            mydatabase.execSQL("INSERT INTO planLocationRelations VALUES(" + plan.getId() + ", " + did + ", " +  i + ");");
+            mydatabase.execSQL("INSERT INTO planLocationRelations VALUES(" + plan.getId() + ", " + did + ", " +  i +
+                    ");");
         }
     }
 

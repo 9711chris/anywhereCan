@@ -10,6 +10,10 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
@@ -55,6 +59,8 @@ import com.example.christantia.googlemap.data.LocationsContract;
 import com.example.christantia.googlemap.data.LocationsDbHelper;
 import com.example.christantia.googlemap.model.Destination;
 import com.example.christantia.googlemap.model.MyGoogleAPI;
+import com.example.christantia.googlemap.model.MySQLiteDB;
+import com.example.christantia.googlemap.model.Planner;
 import com.example.christantia.googlemap.utilities.ObtainMapsData;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -74,6 +80,7 @@ import com.wunderlist.slidinglayer.transformer.RotationTransformer;
 import com.wunderlist.slidinglayer.transformer.SlideJoyTransformer;
 
 import java.io.IOException;
+import java.nio.DoubleBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,6 +99,10 @@ public class MapsActivity extends AppCompatActivity implements
     private SlidingLayer mSlidingLayer;
     private RelativeLayout directions;
     private Location mLastLocation;
+    private MySQLiteDB mySQLiteDB ;
+    public Location getmLastLocation(){
+        return mLastLocation;
+    }
     private MyGoogleAPI myGoogleAPI;
 
    /* public enum Toolbars {
@@ -125,6 +136,7 @@ public class MapsActivity extends AppCompatActivity implements
     AlertDialog.Builder builder;
     private Destination tobeShownonMap;
     private Destination toPutonPlan;
+    private Planner planner;
     int i = 0;
     ArrayList<Destination> infoHawkers = new ArrayList<Destination>();
     ArrayList<Destination> infoHotels = new ArrayList<Destination>();
@@ -137,7 +149,7 @@ public class MapsActivity extends AppCompatActivity implements
     private Button newButton;
 
     private static int buttonPlanId = 0;
-
+    private static int nowPlanId = 0;
     private static int bottomSheetId = 0;
 
     private ArrayList<DestinationItem> destinationList1 = new ArrayList<DestinationItem>();
@@ -192,6 +204,8 @@ public class MapsActivity extends AppCompatActivity implements
                     .addApi(LocationServices.API)
                     .build();
         }
+        planner = new Planner(mDbHelper);
+        mySQLiteDB = new MySQLiteDB(mDbHelper);
         bindViews();
         initState();
 
@@ -201,6 +215,7 @@ public class MapsActivity extends AppCompatActivity implements
         loading.setCanceledOnTouchOutside(false);
 
         new FetchData().execute();
+        initPlanner();
 
         search.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -303,6 +318,150 @@ public class MapsActivity extends AppCompatActivity implements
 
     }
 
+    public void initPlanner(){
+        ArrayList<Integer> temp =new ArrayList<>();
+        temp=mySQLiteDB.retrievePlan(0).getDestinationIds();
+        DestinationItem tempo=null;
+        for(int i=0;i<temp.size();i++)
+        {
+            ArrayList<Destination> t=infoHawkers;
+            for(int j=0;j<t.size();j++)
+                if(t.get(j).getId() == temp.get(i) )
+                    tempo=new DestinationItem(temp.get(i),t.get(j).getName(),
+                            ""+t.get(j).getLatitude(),""+t.get(j).getLongitude());
+
+            t=infoHotels;
+            for(int j=0;j<t.size();j++)
+                if(t.get(j).getId() == temp.get(i) )
+                    tempo=new DestinationItem(temp.get(i),t.get(j).getName(),
+                            ""+t.get(j).getLatitude(),""+t.get(j).getLongitude());
+            t=infoMuseums;
+            for(int j=0;j<t.size();j++)
+                if(t.get(j).getId() == temp.get(i) )
+                    tempo=new DestinationItem(temp.get(i),t.get(j).getName(),
+                            ""+t.get(j).getLatitude(),""+t.get(j).getLongitude());
+
+            t=infoParks;
+            for(int j=0;j<t.size();j++)
+                if(t.get(j).getId() == temp.get(i) )
+                    tempo=new DestinationItem(temp.get(i),t.get(j).getName(),
+                            ""+t.get(j).getLatitude(),""+t.get(j).getLongitude());
+
+            t=infoSports;
+            for(int j=0;j<t.size();j++)
+                if(t.get(j).getId() == temp.get(i) )
+                    tempo=new DestinationItem(temp.get(i),t.get(j).getName(),
+                            ""+t.get(j).getLatitude(),""+t.get(j).getLongitude());
+
+            destinationList1.add(tempo);
+        }
+
+        temp=mySQLiteDB.retrievePlan(1).getDestinationIds();
+        for(int i=0;i<temp.size();i++)
+        {
+            ArrayList<Destination> t=infoHawkers;
+            for(int j=0;j<t.size();j++)
+                if(t.get(j).getId() == temp.get(i) )
+                    tempo=new DestinationItem(temp.get(i),t.get(j).getName(),
+                            ""+t.get(j).getLatitude(),""+t.get(j).getLongitude());
+
+            t=infoHotels;
+            for(int j=0;j<t.size();j++)
+                if(t.get(j).getId() == temp.get(i) )
+                    tempo=new DestinationItem(temp.get(i),t.get(j).getName(),
+                            ""+t.get(j).getLatitude(),""+t.get(j).getLongitude());
+            t=infoMuseums;
+            for(int j=0;j<t.size();j++)
+                if(t.get(j).getId() == temp.get(i) )
+                    tempo=new DestinationItem(temp.get(i),t.get(j).getName(),
+                            ""+t.get(j).getLatitude(),""+t.get(j).getLongitude());
+
+            t=infoParks;
+            for(int j=0;j<t.size();j++)
+                if(t.get(j).getId() == temp.get(i) )
+                    tempo=new DestinationItem(temp.get(i),t.get(j).getName(),
+                            ""+t.get(j).getLatitude(),""+t.get(j).getLongitude());
+
+            t=infoSports;
+            for(int j=0;j<t.size();j++)
+                if(t.get(j).getId() == temp.get(i) )
+                    tempo=new DestinationItem(temp.get(i),t.get(j).getName(),
+                            ""+t.get(j).getLatitude(),""+t.get(j).getLongitude());
+
+            destinationList2.add(tempo);
+        }
+
+        temp=mySQLiteDB.retrievePlan(2).getDestinationIds();
+        for(int i=0;i<temp.size();i++)
+        {
+            ArrayList<Destination> t=infoHawkers;
+            for(int j=0;j<t.size();j++)
+                if(t.get(j).getId() == temp.get(i) )
+                    tempo=new DestinationItem(temp.get(i),t.get(j).getName(),
+                            ""+t.get(j).getLatitude(),""+t.get(j).getLongitude());
+
+            t=infoHotels;
+            for(int j=0;j<t.size();j++)
+                if(t.get(j).getId() == temp.get(i) )
+                    tempo=new DestinationItem(temp.get(i),t.get(j).getName(),
+                            ""+t.get(j).getLatitude(),""+t.get(j).getLongitude());
+            t=infoMuseums;
+            for(int j=0;j<t.size();j++)
+                if(t.get(j).getId() == temp.get(i) )
+                    tempo=new DestinationItem(temp.get(i),t.get(j).getName(),
+                            ""+t.get(j).getLatitude(),""+t.get(j).getLongitude());
+
+            t=infoParks;
+            for(int j=0;j<t.size();j++)
+                if(t.get(j).getId() == temp.get(i) )
+                    tempo=new DestinationItem(temp.get(i),t.get(j).getName(),
+                            ""+t.get(j).getLatitude(),""+t.get(j).getLongitude());
+
+            t=infoSports;
+            for(int j=0;j<t.size();j++)
+                if(t.get(j).getId() == temp.get(i) )
+                    tempo=new DestinationItem(temp.get(i),t.get(j).getName(),
+                            ""+t.get(j).getLatitude(),""+t.get(j).getLongitude());
+
+            destinationList3.add(tempo);
+        }
+
+        temp=mySQLiteDB.retrievePlan(3).getDestinationIds();
+        for(int i=0;i<temp.size();i++)
+        {
+            ArrayList<Destination> t=infoHawkers;
+            for(int j=0;j<t.size();j++)
+                if(t.get(j).getId() == temp.get(i) )
+                    tempo=new DestinationItem(temp.get(i),t.get(j).getName(),
+                            ""+t.get(j).getLatitude(),""+t.get(j).getLongitude());
+
+            t=infoHotels;
+            for(int j=0;j<t.size();j++)
+                if(t.get(j).getId() == temp.get(i) )
+                    tempo=new DestinationItem(temp.get(i),t.get(j).getName(),
+                            ""+t.get(j).getLatitude(),""+t.get(j).getLongitude());
+            t=infoMuseums;
+            for(int j=0;j<t.size();j++)
+                if(t.get(j).getId() == temp.get(i) )
+                    tempo=new DestinationItem(temp.get(i),t.get(j).getName(),
+                            ""+t.get(j).getLatitude(),""+t.get(j).getLongitude());
+
+            t=infoParks;
+            for(int j=0;j<t.size();j++)
+                if(t.get(j).getId() == temp.get(i) )
+                    tempo=new DestinationItem(temp.get(i),t.get(j).getName(),
+                            ""+t.get(j).getLatitude(),""+t.get(j).getLongitude());
+
+            t=infoSports;
+            for(int j=0;j<t.size();j++)
+                if(t.get(j).getId() == temp.get(i) )
+                    tempo=new DestinationItem(temp.get(i),t.get(j).getName(),
+                            ""+t.get(j).getLatitude(),""+t.get(j).getLongitude());
+
+            destinationList4.add(tempo);
+        }
+    }
+
     public void populateList() {
         System.out.println("POPULATE ANJENG");
         // TODO: jadiin dao
@@ -335,6 +494,7 @@ public class MapsActivity extends AppCompatActivity implements
 
             resultSet.moveToNext();
         }
+
     }
 
     private void bindViews() {
@@ -543,28 +703,47 @@ public class MapsActivity extends AppCompatActivity implements
         view.setLayoutParams(new LinearLayout.LayoutParams(Toolbar.LayoutParams.MATCH_PARENT, Toolbar.LayoutParams.WRAP_CONTENT));
         a.addView(view);
         View plus = view.findViewById(DestinationListView.PLUS_INT);
-        plus.setOnTouchListener(new View.OnTouchListener() {
+        plus.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
+            public void onClick(View v) {
                 Log.d(TAG, "onTouch entered plus");
                 returnToMap();
                 toPutonPlan = cur;
-                return true;
+                addDestinationToPlan(cur);
             }
+
+
         });
+
         View arrow = view.findViewById(DestinationListView.ARROW_INT);
-        arrow.setOnTouchListener(new View.OnTouchListener() {
+        arrow.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
+            public void onClick(View v) {
                 Log.d(TAG, "onTouch entered arrow");
                 returnToMap();
                 tobeShownonMap = cur;
                 showDirectionOnMap(tobeShownonMap);
-                return true;
             }
         });
         list.addView(a);
         return false;
+    }
+
+    private void addDestinationToPlan(Destination des)
+    {
+        DestinationItem dest = new DestinationItem(des.getId(),des.getName(),""+des.getLatitude(),""+des.getLongitude());
+        int id = 0;
+        switch(nowPlanId){
+            case 0:id=R.id.plan1;
+                break;
+            case 1:id=1;
+                break;
+            case 2:id=2;
+                break;
+            case 3:id=3;
+                break;
+        }
+        generateDestinationList1(id,dest);
     }
 
     private void showDirectionOnMap(final Destination tobeShownonMap){
@@ -572,8 +751,8 @@ public class MapsActivity extends AppCompatActivity implements
         " ,"+mLastLocation.getLongitude() );
         System.out.println("NEED ROUTING destination ="+tobeShownonMap.getLatitude()+
                 " ,"+tobeShownonMap.getLongitude() );
-        myGoogleAPI.displayRoute(tobeShownonMap,mLastLocation,
-                AbstractRouting.TravelMode.DRIVING,
+        myGoogleAPI.displayRoute(
+                AbstractRouting.TravelMode.DRIVING,false,
                 new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()),
                 new LatLng(tobeShownonMap.getLatitude(),tobeShownonMap.getLongitude()));
         //initialize relative layout
@@ -586,14 +765,23 @@ public class MapsActivity extends AppCompatActivity implements
                 return true;
             }
         });
-        addPlan.setOnTouchListener(new View.OnTouchListener() {
+        addPlan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                toPutonPlan = tobeShownonMap;
+
+            }
+        });
+        /*addPlan.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+
                 toPutonPlan = tobeShownonMap;
                 return true;
             }
         });
-
+*/
         View walking = findViewById(R.id.walking);
         View publicTrans = findViewById(R.id.publictrans);
         View car = findViewById(R.id.car);
@@ -601,8 +789,8 @@ public class MapsActivity extends AppCompatActivity implements
         walking.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                myGoogleAPI.displayRoute(tobeShownonMap,mLastLocation,
-                        AbstractRouting.TravelMode.WALKING,
+                myGoogleAPI.displayRoute(
+                        AbstractRouting.TravelMode.WALKING,false,
                         new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()),
                         new LatLng(tobeShownonMap.getLatitude(),tobeShownonMap.getLongitude()));
                 return true;
@@ -611,8 +799,8 @@ public class MapsActivity extends AppCompatActivity implements
         publicTrans.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                myGoogleAPI.displayRoute(tobeShownonMap,mLastLocation,
-                        AbstractRouting.TravelMode.TRANSIT,
+                myGoogleAPI.displayRoute(
+                        AbstractRouting.TravelMode.TRANSIT,false,
                         new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()),
                         new LatLng(tobeShownonMap.getLatitude(),tobeShownonMap.getLongitude()));
                 return true;
@@ -621,8 +809,8 @@ public class MapsActivity extends AppCompatActivity implements
         car.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                myGoogleAPI.displayRoute(tobeShownonMap,mLastLocation,
-                        AbstractRouting.TravelMode.DRIVING,
+                myGoogleAPI.displayRoute(
+                        AbstractRouting.TravelMode.DRIVING,false,
                         new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()),
                         new LatLng(tobeShownonMap.getLatitude(),tobeShownonMap.getLongitude()));return true;
             }
@@ -655,7 +843,7 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
-    public void generateDestinationList1(int planId, String destination, String latitude, String longitude) {
+    public void generateDestinationList1(int planId, DestinationItem destination) {
 //        DestinationItem item1 = new DestinationItem("destination1", "123", "456");
 //        DestinationItem item2 = new DestinationItem("destination2", "789", "123");
 //        DestinationItem item3 = new DestinationItem("destination3", "456", "789");
@@ -663,20 +851,16 @@ public class MapsActivity extends AppCompatActivity implements
 //        DestinationItem item5 = new DestinationItem("destination5", "456", "123");
         switch(planId){
             case R.id.plan1:
-                DestinationItem item1 = new DestinationItem(destination,latitude,longitude);
-                destinationList1.add(item1);
+                destinationList1.add(destination);
                 break;
             case 1:
-                DestinationItem item2 = new DestinationItem(destination,latitude,longitude);
-                destinationList2.add(item2);
+                destinationList2.add(destination);
                 break;
             case 2:
-                DestinationItem item3 = new DestinationItem(destination,latitude,longitude);
-                destinationList3.add(item3);
+                destinationList3.add(destination);
                 break;
             case 3:
-                DestinationItem item4 = new DestinationItem(destination,latitude,longitude);
-                destinationList4.add(item4);
+                destinationList4.add(destination);
                 break;
         }
     }
@@ -695,12 +879,7 @@ public class MapsActivity extends AppCompatActivity implements
         if (btnToSheet != null) {
 
             if (btnToSheet.equals((Button) findViewById(R.id.plan1))) {
-                this.generateDestinationList1(R.id.plan1,"destination1", "123", "456");
-                this.generateDestinationList1(R.id.plan1,"destination2", "789", "123");
-                this.generateDestinationList1(R.id.plan1,"destination3", "789", "123");
-                this.generateDestinationList1(R.id.plan1,"destination4", "789", "123");
-                this.generateDestinationList1(R.id.plan1,"destination5", "789", "123");
-
+                nowPlanId = 0;
                 if(destinationList1.isEmpty()){
                     bottomSheetView = inflater.inflate(R.layout.bottom_sheet_1, null);
                 }
@@ -721,7 +900,7 @@ public class MapsActivity extends AppCompatActivity implements
                     bottomSheetView = inflater.inflate(R.layout.plan_window_1, null);
 
                     final LinearLayout ll = (LinearLayout) bottomSheetView.findViewById(R.id.destination);
-                    final Button replace = (Button) ll.findViewById(R.id.btn_save);
+                    final Button replace = (Button) ll.findViewById(R.id.btn_save_1);
                     ll.removeView(replace);
                     ll.addView(destinationListView);
                     ll.addView(replace);
@@ -760,6 +939,7 @@ public class MapsActivity extends AppCompatActivity implements
             else {
                 switch (bottomSheetId) {
                  case 1:
+                     nowPlanId=1;
                      if(destinationList2.isEmpty()){
                          bottomSheetView = inflater.inflate(R.layout.bottom_sheet_2, null);
                      }
@@ -812,6 +992,7 @@ public class MapsActivity extends AppCompatActivity implements
                      }
                     break;
                  case 2:
+                     nowPlanId = 2;
                      if(destinationList3.isEmpty()){
                          bottomSheetView = inflater.inflate(R.layout.bottom_sheet_3, null);
                      }
@@ -864,6 +1045,7 @@ public class MapsActivity extends AppCompatActivity implements
                      }
                     break;
                  case 3:
+                     nowPlanId = 3;
                      if(destinationList4.isEmpty()){
                          bottomSheetView = inflater.inflate(R.layout.bottom_sheet_4, null);
                      }
@@ -937,13 +1119,17 @@ public class MapsActivity extends AppCompatActivity implements
         if(buttonPlanId<3) {
             parent.removeView(addPlan);
             newButton = new Button(this);
-            newButton.setLayoutParams(params);
-            /*
-            newButton.setBackgroundColor(0x27ae60);
+            newButton.setLayoutParams(new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
+
+            Drawable d = newButton.getBackground();
+            PorterDuffColorFilter filter = new PorterDuffColorFilter(Color.parseColor("#27ae60"), PorterDuff.Mode.SRC_ATOP);
+            d.setColorFilter(filter);
+
             newButton.setAllCaps(true);
-            newButton.setTextColor(0x2c3e50);
-            newButton.setTypeface(Typeface.DEFAULT_BOLD);
-            */
+            newButton.setTextColor(Color.parseColor("#2c3e50"));
+            newButton.setTypeface(null, Typeface.BOLD);
             newButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -988,5 +1174,91 @@ public class MapsActivity extends AppCompatActivity implements
             super.onPostExecute(aVoid);
             loading.hide();
         }
+    }
+
+    public void defaultDirections(View v){
+        int clicked = v.getId();
+        ArrayList<DestinationItem> temp=new ArrayList<DestinationItem>();
+        switch(clicked){
+            case R.id.default1:temp=destinationList1;
+                break;
+            case R.id.default2:temp=destinationList2;
+                break;
+            case R.id.default3:temp=destinationList3;
+                break;
+            case R.id.default4:temp=destinationList4;
+                break;
+        }
+        LatLng[] tempo=new LatLng[temp.size()+1];
+        tempo[0]= new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude());
+        for(int i=1;i<=temp.size();i++)
+            tempo[i]= new LatLng(Double.parseDouble(temp.get(i-1).getLatitude()),
+                    Double.parseDouble(temp.get(i-1).getLongitude())) ;
+
+     //   myGoogleAPI.displayRoute(AbstractRouting.TravelMode.DRIVING , true, tempo);
+    }
+
+    public void chainDirections(View v){
+        int clicked = v.getId();
+        ArrayList<DestinationItem> temp=new ArrayList<DestinationItem>();
+        switch(clicked){
+            case R.id.chain1:temp=destinationList1;
+                break;
+            case R.id.chain2:temp=destinationList2;
+                break;
+            case R.id.chain3:temp=destinationList3;
+                break;
+            case R.id.chain4:temp=destinationList4;
+                break;
+        }
+        LatLng[] tempo=new LatLng[temp.size()+1];
+        tempo[0]= new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude());
+        for(int i=1;i<=temp.size();i++)
+            tempo[i]= new LatLng(Double.parseDouble(temp.get(i-1).getLatitude()),
+                    Double.parseDouble(temp.get(i-1).getLongitude())) ;
+
+        myGoogleAPI.displayRoute(AbstractRouting.TravelMode.DRIVING , false, tempo);
+    }
+
+    public void chainRecommended(View v){
+        int clicked = v.getId();
+        ArrayList<DestinationItem> temp=new ArrayList<DestinationItem>();
+        switch(clicked){
+            case R.id.recommend1:temp=destinationList1;
+                break;
+            case R.id.recommend2:temp=destinationList2;
+                break;
+            case R.id.recommend3:temp=destinationList3;
+                break;
+            case R.id.recommend4:temp=destinationList4;
+                break;
+        }
+        LatLng[] tempo=new LatLng[temp.size()+1];
+        tempo[0]= new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude());
+        for(int i=1;i<=temp.size();i++)
+            tempo[i]= new LatLng(Double.parseDouble(temp.get(i-1).getLatitude()),
+                    Double.parseDouble(temp.get(i-1).getLongitude())) ;
+
+        if(temp.size()+1 >2)
+            myGoogleAPI.displayRoute(AbstractRouting.TravelMode.DRIVING , true, tempo);
+        else
+            myGoogleAPI.displayRoute(AbstractRouting.TravelMode.DRIVING , false, tempo);
+    }
+    public void savePlan(View v){
+        int clicked = v.getId();
+        ArrayList<DestinationItem> temp=new ArrayList<>();
+        int id=0;
+        switch(clicked){
+            case R.id.btn_save_1:temp = destinationList1;id=0;
+                break;
+            case R.id.btn_save_2:temp=destinationList2;id=1;
+                break;
+            case R.id.btn_save_3:temp=destinationList3;id=2;
+                break;
+            case R.id.btn_save_4:temp=destinationList4;id=3;
+                break;
+        }
+        for(int i=0;i<temp.size();i++)
+            planner.addDestinationToPlan(id,temp.get(i).getId() );
     }
 }

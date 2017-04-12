@@ -49,7 +49,7 @@ public class Planner {
     }
 
     public void addDestinationToPlan(int planId, int destinationId) {
-        if (planId < 1 || planId > 4) return;
+        if (planId < 0 || planId > 3) return;
 
         planList.get(planId).addDestinationId(destinationId);
         mydatabase.insertIntoPlan(planList.get(planId));
@@ -57,7 +57,7 @@ public class Planner {
     }
 
     public boolean deleteDestinationFromPlan(int planId, int destinationId) {
-        if (planId < 1 || planId > 4) return false;
+        if (planId < 0 || planId > 3) return false;
         planList.get(planId).removeDestinationId(destinationId);
         mydatabase.insertIntoPlan(planList.get(planId));
         return true;

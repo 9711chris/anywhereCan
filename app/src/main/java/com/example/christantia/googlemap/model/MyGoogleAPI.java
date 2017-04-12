@@ -44,8 +44,6 @@ public class MyGoogleAPI implements com.directions.route.RoutingListener{
     private List<Polyline> polylines = new ArrayList<>();
     private GoogleMap mMap;
     private ProgressDialog progressDialog;
-    Destination to;
-    Location now;
     LatLng start;
     LatLng end;
     Context c;
@@ -67,12 +65,10 @@ public class MyGoogleAPI implements com.directions.route.RoutingListener{
         polylines = new ArrayList<>();
     }
 
-    public void displayRoute(Destination to,
-                             Location now,
-                             AbstractRouting.TravelMode travelMode,
+    public void displayRoute(AbstractRouting.TravelMode travelMode,
+                             boolean optimize,
                              LatLng... waypoints) {
-        this.to = to;
-        this.now = now;
+
         this.start = waypoints[0];
         this.end = waypoints[waypoints.length - 1];
 
@@ -83,7 +79,7 @@ public class MyGoogleAPI implements com.directions.route.RoutingListener{
                 .travelMode(travelMode)
                 .withListener(this)
                 .alternativeRoutes(true)
-                .optimize(false)
+                .optimize(optimize)
                 .key("AIzaSyAkybgNh0YVABRYGmg6jNrrXs5lTsIH800")
                 .waypoints(waypoints)
                 .build();
@@ -148,14 +144,12 @@ public class MyGoogleAPI implements com.directions.route.RoutingListener{
 //        }
 
 
-        showDirectionOnMap(to,now,route.get(i).getSegments());
+        showDirectionOnMap(route.get(i).getSegments());
         System.out.println("ANJENGG SUCCESS COEG MyGoogleAPI!");
 
     }
 
-    private void showDirectionOnMap(final Destination tobeShownonMap,
-                                    Location mLastLocation,
-                                    List<Segment> segments) {
+    private void showDirectionOnMap(List<Segment> segments) {
         //process address string through geolocation + show onmap
         final RelativeLayout directions = (RelativeLayout) ac.findViewById(R.id.directions);
 

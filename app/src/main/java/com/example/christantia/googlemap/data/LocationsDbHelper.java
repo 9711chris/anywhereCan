@@ -27,7 +27,7 @@ public class LocationsDbHelper extends SQLiteOpenHelper{
                 LocationsEntry.COLUMN_LOCATION_NAME + " TEXT NOT NULL, " +
                 LocationsEntry.COLUMN_LOCATION_TYPE + " TEXT NOT NULL, " +
                 LocationsEntry.COLUMN_COORDINATES + "  TEXT NOT NULL, " +
-                LocationsEntry.COLUMN_ADDRESS + " TEXT DEFAULT NULL" +
+                LocationsEntry.COLUMN_ADDRESS + " TEXT DEFAULT NULL," +
                 "); ";
 
         final String SQL_CREATE_PLANS_TABLE = "CREATE TABLE " + PlansEntry.TABLE_NAME + " (" +
@@ -39,6 +39,7 @@ public class LocationsDbHelper extends SQLiteOpenHelper{
                 PlanLocationRelationsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 PlanLocationRelationsEntry.COLUMN_PLAN_ID + " INTEGER NOT NULL, " +
                 PlanLocationRelationsEntry.COLUMN_LOCATION_ID + " INTEGER NOT NULL, " +
+                PlanLocationRelationsEntry.COLUMN_SEQ + " INTEGER," +
                 " FOREIGN KEY (" + PlanLocationRelationsEntry.COLUMN_PLAN_ID + ") REFERENCES " +
                 PlansEntry.TABLE_NAME + "(" + PlansEntry._ID + ") ON UPDATE CASCADE ON DELETE CASCADE, " +
                 " FOREIGN KEY (" + PlanLocationRelationsEntry.COLUMN_LOCATION_ID + ") REFERENCES " +

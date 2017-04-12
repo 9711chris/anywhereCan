@@ -77,11 +77,12 @@
             </RelativeLayout> -->
 
             <Button
-                android:id="@+id/btn_save"
+                android:id="@+id/btn_save_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="save!"/>
+                android:text="save!"
+                android:onClick="savePlan"/>
                 <!--android:visibility="gone"/>-->
 
         </LinearLayout>
@@ -109,24 +110,24 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/defaultdir"
-                android:layout_marginBottom="5dp"/>
-                <!--android:onClick="defaultDirections"-->
+                android:layout_marginBottom="5dp"
+                android:onClick="defaultDirections"/>
 
             <ImageButton
                 android:id="@+id/chain1"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/chain"
-                android:layout_marginBottom="5dp"/>
-                <!--android:onClick="chainDirections"-->
+                android:layout_marginBottom="5dp"
+                android:onClick="chainDirections"/>
 
             <ImageButton
                 android:id="@+id/recommend1"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/recommend"
-                android:layout_marginBottom="5dp"/>
-                <!--android:onClick="chainRecommended"-->
+                android:layout_marginBottom="5dp"
+                android:onClick="chainRecommended"/>
 
         </LinearLayout>
 

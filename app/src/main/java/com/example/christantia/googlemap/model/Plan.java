@@ -10,7 +10,6 @@ public class Plan {
     private int id;
     private ArrayList<Integer> destinationIds = new ArrayList<>();
 
-
     public Plan() {
         id = -1;
     }

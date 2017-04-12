@@ -26,5 +26,6 @@ public final class LocationsContract {
         public static final String TABLE_NAME = "planLocationRelations";
         public static final String COLUMN_PLAN_ID = "planId";
         public static final String COLUMN_LOCATION_ID = "locationId";
+        public static final String COLUMN_SEQ = "seq";
     }
 }
