@@ -29,7 +29,7 @@ public class ObtainMapsData {
 
     private static Context context;
 
-    public static Map<String, String> urlStrings = createMap();
+    public static Map<String,String> urlStrings = createMap();
     private static Map<String, String> createMap()
     {
         Map<String,String> myMap = new HashMap<>();

@@ -75,13 +75,11 @@ public class JsonXmlUtils {
                                     int eventType4 = xpp.next();
                                     if (eventType4 == XmlPullParser.START_TAG && xpp.getName().equalsIgnoreCase("coordinates")){
                                         String coordinates = xpp.nextText();
-
                                         Map<String, String> tempMap = new HashMap<>();
                                         tempMap.put("locationName", locationName);
                                         tempMap.put("coordinates", coordinates);
                                         tempMap.put("locationType", locationType);
                                         mapList.add(tempMap);
-
                                         flag=true;
                                     }
                                 }
