@@ -42,6 +42,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -215,7 +216,7 @@ public class MapsActivity extends AppCompatActivity implements
         loading.setCanceledOnTouchOutside(false);
 
         new FetchData().execute();
-        initPlanner();
+
 
         search.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -250,6 +251,9 @@ public class MapsActivity extends AppCompatActivity implements
         });
 
 
+        final EditText edittext = (EditText) findViewById(R.id.editText);
+
+
         //initialize lists
         /*LinearLayout list = (LinearLayout) findViewById(R.id.destination_list);
 
@@ -279,6 +283,11 @@ public class MapsActivity extends AppCompatActivity implements
         eateries.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 returnToMap();
+                LinearLayout list = (LinearLayout) findViewById(R.id.destination_list);
+                list.removeAllViews();
+                for (Destination cur : infoHawkers) {
+                    addNewItemInList(list, cur);
+                }
                 //intialize(2);
                 setClicks("Eateries");
 
@@ -287,19 +296,58 @@ public class MapsActivity extends AppCompatActivity implements
         park.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 returnToMap();
+                LinearLayout list = (LinearLayout) findViewById(R.id.destination_list);
+                list.removeAllViews();
+                for (Destination cur : infoParks) {
+                    addNewItemInList(list, cur);
+                }
                 setClicks("Parks");
             }
         });
         museum.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 returnToMap();
+                LinearLayout list = (LinearLayout) findViewById(R.id.destination_list);
+                list.removeAllViews();
+                for (Destination cur : infoMuseums) {
+                    addNewItemInList(list, cur);
+                }
                 setClicks("Museums");
             }
         });
         sport.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 returnToMap();
+                LinearLayout list = (LinearLayout) findViewById(R.id.destination_list);
+                list.removeAllViews();
+                for (Destination cur : infoSports) {
+                    addNewItemInList(list, cur);
+                }
                 setClicks("Sports");
+            }
+        });
+
+        findViewById(R.id.button4).setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                returnToMap();
+                String searchDest = String.valueOf(edittext.getText());
+                LinearLayout list = (LinearLayout) findViewById(R.id.destination_list);
+                list.removeAllViews();
+                Cursor cursor = mDbHelper.getReadableDatabase().rawQuery("SELECT * FROM locations" +
+                        " WHERE locationName LIKE \'%"+ searchDest+"%\' ",null);
+                ArrayList<Destination> temp = new ArrayList<Destination>();
+                cursor.moveToFirst();
+                while(!cursor.isAfterLast()) {
+                    temp.add(new Destination(cursor.getInt(0), Double.parseDouble(cursor.getString(3).split(",")[0]),
+                            Double.parseDouble(cursor.getString(3).split(",")[1]), cursor.getString(4),
+                            cursor.getString(1), cursor.getString(2)));
+                    cursor.moveToNext();
+                }
+                for (Destination cur : temp) {
+                    addNewItemInList(list, cur);
+                }
+
+                setClicks("Results");
             }
         });
 
@@ -324,35 +372,47 @@ public class MapsActivity extends AppCompatActivity implements
         DestinationItem tempo=null;
         for(int i=0;i<temp.size();i++)
         {
+            System.out.println("temp = "+temp.get(i));
             ArrayList<Destination> t=infoHawkers;
-            for(int j=0;j<t.size();j++)
-                if(t.get(j).getId() == temp.get(i) )
-                    tempo=new DestinationItem(temp.get(i),t.get(j).getName(),
-                            ""+t.get(j).getLatitude(),""+t.get(j).getLongitude());
+            for(int j=0;j<t.size();j++) {
+                if (t.get(j).getId() == temp.get(i)) {
+                    System.out.println("CONGRATS");
+                    tempo = new DestinationItem(temp.get(i), t.get(j).getName(),
+                            "" + t.get(j).getLatitude(), "" + t.get(j).getLongitude());
+                }
+            }
 
             t=infoHotels;
             for(int j=0;j<t.size();j++)
-                if(t.get(j).getId() == temp.get(i) )
+                if(t.get(j).getId() == temp.get(i) ){
+                    System.out.println("CONGRATS");
                     tempo=new DestinationItem(temp.get(i),t.get(j).getName(),
                             ""+t.get(j).getLatitude(),""+t.get(j).getLongitude());
+                }
             t=infoMuseums;
             for(int j=0;j<t.size();j++)
-                if(t.get(j).getId() == temp.get(i) )
-                    tempo=new DestinationItem(temp.get(i),t.get(j).getName(),
-                            ""+t.get(j).getLatitude(),""+t.get(j).getLongitude());
+                if(t.get(j).getId() == temp.get(i) ) {
+                    System.out.println("CONGRATS");
+                    tempo = new DestinationItem(temp.get(i), t.get(j).getName(),
+                            "" + t.get(j).getLatitude(), "" + t.get(j).getLongitude());
+                }
 
             t=infoParks;
             for(int j=0;j<t.size();j++)
-                if(t.get(j).getId() == temp.get(i) )
-                    tempo=new DestinationItem(temp.get(i),t.get(j).getName(),
-                            ""+t.get(j).getLatitude(),""+t.get(j).getLongitude());
+                if(t.get(j).getId() == temp.get(i) ) {
+                    System.out.println("CONGRATS");
+                    tempo = new DestinationItem(temp.get(i), t.get(j).getName(),
+                            "" + t.get(j).getLatitude(), "" + t.get(j).getLongitude());
+                }
 
             t=infoSports;
             for(int j=0;j<t.size();j++)
-                if(t.get(j).getId() == temp.get(i) )
-                    tempo=new DestinationItem(temp.get(i),t.get(j).getName(),
-                            ""+t.get(j).getLatitude(),""+t.get(j).getLongitude());
-
+                if(t.get(j).getId() == temp.get(i) ) {
+                    System.out.println("CONGRATS");
+                    tempo = new DestinationItem(temp.get(i), t.get(j).getName(),
+                            "" + t.get(j).getLatitude(), "" + t.get(j).getLongitude());
+                }
+            System.out.println("tempo "+tempo.getDestinationName()+" "+tempo.getLatitude()+" "+tempo.getLongitude());
             destinationList1.add(tempo);
         }
 
@@ -568,7 +628,6 @@ public class MapsActivity extends AppCompatActivity implements
         LatLng current=singapore;
         if(mLastLocation != null)
             current = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        mMap.addMarker(new MarkerOptions().position(current).title("i'm here marker in Singapore"));
         //Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         //if (updatedLng != null)
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 10.0f));
@@ -628,7 +687,6 @@ public class MapsActivity extends AppCompatActivity implements
 
         if(mLastLocation != null)
             current = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        mMap.addMarker(new MarkerOptions().position(current).title("i'm here marker in Singapore"));
         //Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         //if (updatedLng != null)
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 10.0f));
@@ -880,6 +938,7 @@ public class MapsActivity extends AppCompatActivity implements
 
             if (btnToSheet.equals((Button) findViewById(R.id.plan1))) {
                 nowPlanId = 0;
+                System.out.println("size plan1 = "+destinationList1.size() );
                 if(destinationList1.isEmpty()){
                     bottomSheetView = inflater.inflate(R.layout.bottom_sheet_1, null);
                 }
@@ -1159,6 +1218,7 @@ public class MapsActivity extends AppCompatActivity implements
             Log.d("Prab","ANjeng");
             ObtainMapsData.saveAllKmlToDb(getApplicationContext(), mDbHelper);
             populateList();
+            initPlanner();
 
             return null;
         }
@@ -1260,5 +1320,8 @@ public class MapsActivity extends AppCompatActivity implements
         }
         for(int i=0;i<temp.size();i++)
             planner.addDestinationToPlan(id,temp.get(i).getId() );
+
+        if(temp.size() ==0 )
+            mDbHelper.getWritableDatabase().execSQL("DELETE FROM planLocationRelations WHERE planId = " +id);
     }
 }

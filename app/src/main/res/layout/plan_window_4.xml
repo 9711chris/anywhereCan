@@ -76,24 +76,24 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/defaultdir"
-                android:layout_marginBottom="5dp"/>
-            <!--android:onClick="defaultDirections"-->
+                android:layout_marginBottom="5dp"
+                android:onClick="defaultDirections"/>
 
             <ImageButton
                 android:id="@+id/chain4"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/chain"
-                android:layout_marginBottom="5dp"/>
-            <!--android:onClick="chainDirections"-->
+                android:layout_marginBottom="5dp"
+                android:onClick="chainDirections"/>
 
             <ImageButton
                 android:id="@+id/recommend4"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/recommend"
-                android:layout_marginBottom="5dp"/>
-            <!--android:onClick="chainRecommended"-->
+                android:layout_marginBottom="5dp"
+                android:onClick="chainRecommended"/>
 
         </LinearLayout>
 

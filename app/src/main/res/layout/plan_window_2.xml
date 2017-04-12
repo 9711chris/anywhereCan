@@ -68,32 +68,31 @@
                 android:layout_height="50dp"
                 android:src="@drawable/delete"
                 android:layout_marginTop="9dp"
-                android:layout_marginBottom="5dp"/>
-            <!--android:onClick="deleteChecked"-->
+                android:layout_marginBottom="5dp" />
 
             <ImageButton
                 android:id="@+id/default2"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/defaultdir"
-                android:layout_marginBottom="5dp"/>
-            <!--android:onClick="defaultDirections"-->
+                android:layout_marginBottom="5dp"
+                android:onClick="defaultDirections"/>
 
             <ImageButton
                 android:id="@+id/chain2"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/chain"
-                android:layout_marginBottom="5dp"/>
-            <!--android:onClick="chainDirections"-->
+                android:layout_marginBottom="5dp"
+                android:onClick="chainDirections"/>
 
             <ImageButton
                 android:id="@+id/recommend2"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/recommend"
-                android:layout_marginBottom="5dp"/>
-            <!--android:onClick="chainRecommended"-->
+                android:layout_marginBottom="5dp"
+                android:onClick="chainRecommended"/>
 
         </LinearLayout>
 

@@ -4,6 +4,7 @@ package com.example.christantia.googlemap.model;
  * Created by Christantia on 4/12/2017.
  */
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -38,21 +39,28 @@ public class MySQLiteDB implements MyDBInterface {
 
         for (int i=0; i<plan.getDestinationIds().size(); i++) {
             int did = plan.getDestinationIds().get(i);
-            mydatabase.execSQL("INSERT INTO planLocationRelations VALUES(" + plan.getId() + ", " + did + ", " +  i +
-                    ");");
+         //   mydatabase.execSQL("INSERT INTO planLocationRelations VALUES(" + plan.getId() + ", " + did + ", " +  i + ");");
+            ContentValues values = new ContentValues();
+            values.put(LocationsContract.PlanLocationRelationsEntry
+                    .COLUMN_PLAN_ID, plan.getId() );
+            values.put(LocationsContract.PlanLocationRelationsEntry
+                    .COLUMN_LOCATION_ID, did);
+            values.put(LocationsContract.PlanLocationRelationsEntry
+                    .COLUMN_SEQ, i);
+            mydatabase.insert(LocationsContract.PlanLocationRelationsEntry.TABLE_NAME, null, values);
         }
     }
 
 
     public Plan retrievePlan(int id) {
-        if (id < 1 || id > 4) {
+        if (id < 0 || id > 3) {
             return new Plan();
         }
         //Cursor cursor = mydatabase.rawQuery("SELECT * FROM planLocationRelations WHERE planId = " + id + " ORDER BY seq ASC", null);
         Cursor cursor = mydatabase.query(false, LocationsContract.PlanLocationRelationsEntry.TABLE_NAME,null,"planId = "+id ,null,null,null,"seq ASC",null);
         ArrayList<Integer> destinationIds = new ArrayList<>();
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-            destinationIds.add(cursor.getInt(1));
+            destinationIds.add(cursor.getInt(2));
         }
         cursor.close();
 

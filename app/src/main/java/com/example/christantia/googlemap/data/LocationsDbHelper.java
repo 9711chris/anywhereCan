@@ -13,7 +13,7 @@ public class LocationsDbHelper extends SQLiteOpenHelper{
 
     private static final String DATABASE_NAME = "locations.db";
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     public LocationsDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -27,7 +27,7 @@ public class LocationsDbHelper extends SQLiteOpenHelper{
                 LocationsEntry.COLUMN_LOCATION_NAME + " TEXT NOT NULL, " +
                 LocationsEntry.COLUMN_LOCATION_TYPE + " TEXT NOT NULL, " +
                 LocationsEntry.COLUMN_COORDINATES + "  TEXT NOT NULL, " +
-                LocationsEntry.COLUMN_ADDRESS + " TEXT DEFAULT NULL," +
+                LocationsEntry.COLUMN_ADDRESS + " TEXT DEFAULT NULL" +
                 "); ";
 
         final String SQL_CREATE_PLANS_TABLE = "CREATE TABLE " + PlansEntry.TABLE_NAME + " (" +
@@ -50,6 +50,10 @@ public class LocationsDbHelper extends SQLiteOpenHelper{
         db.execSQL(SQL_CREATE_PLANS_TABLE);
         db.execSQL(SQL_CREATE_PLAN_LOCATION_RELATIONS_TABLE);
 
+        db.execSQL("INSERT INTO plans (" + PlansEntry._ID+") VALUES (0)");
+        db.execSQL("INSERT INTO plans (" + PlansEntry._ID+") VALUES (1)");
+        db.execSQL("INSERT INTO plans (" + PlansEntry._ID+") VALUES (2)");
+        db.execSQL("INSERT INTO plans (" + PlansEntry._ID+") VALUES (3)");
     }
 
     @Override

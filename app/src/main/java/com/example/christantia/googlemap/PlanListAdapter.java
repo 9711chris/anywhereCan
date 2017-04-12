@@ -98,6 +98,7 @@ public class PlanListAdapter extends ArrayAdapter<DestinationItem>{
         }
 
         holder.button.setTag(holder);
+        System.out.println("size = "+data.size() +", position = "+position);
         String name1 = data.get(position).getDestinationName();
         holder.name.setText(name1);
 

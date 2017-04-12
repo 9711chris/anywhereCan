@@ -41,7 +41,12 @@ public class Planner {
     private MyDBInterface mydatabase;
 
     public Planner(LocationsDbHelper dbHelper) {
-        mydatabase = new MySQLiteDB(dbHelper);
+
+        for(int i=0;i<4;i++)
+        {
+            planList.add(new Plan(i));
+        }
+            mydatabase = new MySQLiteDB(dbHelper);
     }
 
     public ArrayList<Plan> getPlanList() {

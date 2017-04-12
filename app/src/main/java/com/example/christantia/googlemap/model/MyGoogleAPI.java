@@ -143,6 +143,8 @@ public class MyGoogleAPI implements com.directions.route.RoutingListener{
         Toast.makeText(c.getApplicationContext(),"Route "+ (i+1) +": distance - "+ route.get(i).getDistanceValue()+": duration - "+ route.get(i).getDurationValue(),Toast.LENGTH_SHORT).show();
 //        }
 
+        TextView dist = (TextView) ac.findViewById(R.id.distance);
+        dist.setText(route.get(i).getDistanceValue()/1000 + " km, " + route.get(i).getDurationValue()/60 + " min");
 
         showDirectionOnMap(route.get(i).getSegments());
         System.out.println("ANJENGG SUCCESS COEG MyGoogleAPI!");
