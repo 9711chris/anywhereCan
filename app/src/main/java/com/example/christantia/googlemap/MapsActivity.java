@@ -115,9 +115,15 @@ public class MapsActivity extends AppCompatActivity implements
 
     private static int bottomSheetId = 0;
 
-    private ArrayList<DestinationItem> destinationList = new ArrayList<>();
+    private ArrayList<DestinationItem> destinationList1 = new ArrayList<DestinationItem>();
+    private ArrayList<DestinationItem> destinationList2 = new ArrayList<DestinationItem>();
+    private ArrayList<DestinationItem> destinationList3 = new ArrayList<DestinationItem>();
+    private ArrayList<DestinationItem> destinationList4 = new ArrayList<DestinationItem>();
+
     private PlanListAdapter destinationAdapter;
+
     private DynamicListView destinationListView;
+
     static public ArrayList<DestinationItem> ids = new ArrayList<DestinationItem>();
 
     @Override
@@ -542,35 +548,39 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
-    public void generateDestinationList() {
-        DestinationItem item1 = new DestinationItem("destination1", "123", "456");
-        DestinationItem item2 = new DestinationItem("destination2", "789", "123");
-        DestinationItem item3 = new DestinationItem("destination3", "456", "789");
-        DestinationItem item4 = new DestinationItem("destination4", "123", "789");
-        DestinationItem item5 = new DestinationItem("destination5", "456", "123");
-        destinationList.add(item1);
-        destinationList.add(item2);
-        destinationList.add(item3);
-        destinationList.add(item4);
-        destinationList.add(item5);
+    public void generateDestinationList1(int planId, String destination, String latitude, String longitude) {
+//        DestinationItem item1 = new DestinationItem("destination1", "123", "456");
+//        DestinationItem item2 = new DestinationItem("destination2", "789", "123");
+//        DestinationItem item3 = new DestinationItem("destination3", "456", "789");
+//        DestinationItem item4 = new DestinationItem("destination4", "123", "789");
+//        DestinationItem item5 = new DestinationItem("destination5", "456", "123");
+        switch(planId){
+            case R.id.plan1:
+                DestinationItem item1 = new DestinationItem(destination,latitude,longitude);
+                destinationList1.add(item1);
+                break;
+            case 1:
+                DestinationItem item2 = new DestinationItem(destination,latitude,longitude);
+                destinationList2.add(item2);
+                break;
+            case 2:
+                DestinationItem item3 = new DestinationItem(destination,latitude,longitude);
+                destinationList3.add(item3);
+                break;
+            case 3:
+                DestinationItem item4 = new DestinationItem(destination,latitude,longitude);
+                destinationList4.add(item4);
+                break;
+        }
     }
 
     public void openTab(View view) {
 
         returnToMap();
 
-        this.generateDestinationList();
-
         bottomSheetId = view.getId();
         ViewGroup parent = (ViewGroup) findViewById(R.id.plan_bar_new);
         Button btnToSheet = (Button) parent.findViewById(bottomSheetId);
-
-        destinationAdapter =
-                new PlanListAdapter(this,
-                        R.layout.destination_list,
-                        R.id.destination_name,
-                        destinationList
-                );
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
         LayoutInflater inflater = this.getLayoutInflater();
         View bottomSheetView = null;
@@ -578,67 +588,225 @@ public class MapsActivity extends AppCompatActivity implements
         if (btnToSheet != null) {
 
             if (btnToSheet.equals((Button) findViewById(R.id.plan1))) {
-                destinationListView = new DynamicListView(this);
-                destinationListView.setDestinationList(destinationList);
-                destinationListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-                destinationListView.setAdapter(destinationAdapter);
-                destinationListView.setDescendantFocusability(FOCUS_BLOCK_DESCENDANTS);
+                this.generateDestinationList1(R.id.plan1,"destination1", "123", "456");
+                this.generateDestinationList1(R.id.plan1,"destination2", "789", "123");
+                this.generateDestinationList1(R.id.plan1,"destination3", "789", "123");
+                this.generateDestinationList1(R.id.plan1,"destination4", "789", "123");
+                this.generateDestinationList1(R.id.plan1,"destination5", "789", "123");
 
-                bottomSheetView = inflater.inflate(R.layout.plan_window_1, null);
+                if(destinationList1.isEmpty()){
+                    bottomSheetView = inflater.inflate(R.layout.bottom_sheet_1, null);
+                }
+                else {
+                    destinationAdapter =
+                            new PlanListAdapter(this,
+                                    R.layout.destination_list,
+                                    R.id.destination_name,
+                                    destinationList1
+                            );
 
-                LinearLayout ll = (LinearLayout) bottomSheetView.findViewById(R.id.destination);
-                Button replace = (Button) ll.findViewById(R.id.btn_save);
-                ll.removeView(replace);
-                ll.addView(destinationListView);
-                ll.addView(replace);
+                    destinationListView = new DynamicListView(this);
+                    destinationListView.setDestinationList(destinationList1);
+                    destinationListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+                    destinationListView.setAdapter(destinationAdapter);
+                    destinationListView.setDescendantFocusability(FOCUS_BLOCK_DESCENDANTS);
 
-               destinationListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    bottomSheetView = inflater.inflate(R.layout.plan_window_1, null);
 
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view,
-                                            int position, long id) {
+                    final LinearLayout ll = (LinearLayout) bottomSheetView.findViewById(R.id.destination);
+                    final Button replace = (Button) ll.findViewById(R.id.btn_save);
+                    ll.removeView(replace);
+                    ll.addView(destinationListView);
+                    ll.addView(replace);
 
-                        Toast.makeText(getApplicationContext(), "clicked", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-                destinationListView.setOnTouchListener(new View.OnTouchListener() {
-                    // Setting on Touch Listener for handling the touch inside ScrollView
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        // Disallow the touch request for parent scroll on touch of child view
-                        v.getParent().requestDisallowInterceptTouchEvent(true);
-                        return false;
-                    }
-                });
-
-               ImageButton delete = (ImageButton) bottomSheetView.findViewById(R.id.delete1);
-
-                if (delete != null) {
-                    delete.setOnClickListener(new View.OnClickListener() {
-                        public void onClick(View v) {
-                            if (ids.size() > 0) {
-                                for (int i = 0; i < ids.size(); i++) {
-                                    destinationList.remove(ids.get(i));
-//                                  items.remove(items.get(adapter.getItemViewType(ids.get(i))));
-//                                  items.remove(adapter.getItemViewType(ids.get(i)));
-                                }
-                                destinationAdapter.notifyDataSetChanged();
-                            }
+                    destinationListView.setOnTouchListener(new View.OnTouchListener() {
+                        // Setting on Touch Listener for handling the touch inside ScrollView
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            // Disallow the touch request for parent scroll on touch of child view
+                            v.getParent().requestDisallowInterceptTouchEvent(true);
+                            return false;
                         }
                     });
-               }
+
+                    ImageButton delete = (ImageButton) bottomSheetView.findViewById(R.id.delete1);
+
+                    if (delete != null) {
+                        delete.setOnClickListener(new View.OnClickListener() {
+                            public void onClick(View v) {
+                                if (ids.size() > 0) {
+                                    for (int i = 0; i < ids.size(); i++) {
+                                        destinationAdapter.removemIdMap(ids.get(i));
+                                        destinationList1.remove(ids.get(i));
+                                    }
+                                    destinationAdapter.notifyDataSetChanged();
+
+                                    destinationListView.setDestinationList(destinationList1);
+                                    destinationListView.setAdapter(destinationAdapter);
+                                    destinationListView.init(MapsActivity.this);
+                                }
+                            }
+                        });
+                    }
+                }
             }
             else {
                 switch (bottomSheetId) {
                  case 1:
-                    bottomSheetView = inflater.inflate(R.layout.bottom_sheet_2, null);
+                     if(destinationList2.isEmpty()){
+                         bottomSheetView = inflater.inflate(R.layout.bottom_sheet_2, null);
+                     }
+                     else {
+                         destinationAdapter =
+                                 new PlanListAdapter(this,
+                                         R.layout.destination_list,
+                                         R.id.destination_name,
+                                         destinationList2
+                                 );
+
+                         destinationListView = new DynamicListView(this);
+                         destinationListView.setDestinationList(destinationList2);
+                         destinationListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+                         destinationListView.setAdapter(destinationAdapter);
+                         destinationListView.setDescendantFocusability(FOCUS_BLOCK_DESCENDANTS);
+
+                         bottomSheetView = inflater.inflate(R.layout.plan_window_2, null);
+
+                         LinearLayout ll = (LinearLayout) bottomSheetView.findViewById(R.id.destination);
+                         Button replace = (Button) ll.findViewById(R.id.btn_save_2);
+                         ll.removeView(replace);
+                         ll.addView(destinationListView);
+                         ll.addView(replace);
+
+                         destinationListView.setOnTouchListener(new View.OnTouchListener() {
+                             // Setting on Touch Listener for handling the touch inside ScrollView
+                             @Override
+                             public boolean onTouch(View v, MotionEvent event) {
+                                 // Disallow the touch request for parent scroll on touch of child view
+                                 v.getParent().requestDisallowInterceptTouchEvent(true);
+                                 return false;
+                             }
+                         });
+
+                         ImageButton delete = (ImageButton) bottomSheetView.findViewById(R.id.delete2);
+
+                         if (delete != null) {
+                             delete.setOnClickListener(new View.OnClickListener() {
+                                 public void onClick(View v) {
+                                     if (ids.size() > 0) {
+                                         for (int i = 0; i < ids.size(); i++) {
+                                             destinationList2.remove(ids.get(i));
+                                         }
+                                         destinationAdapter.notifyDataSetChanged();
+                                     }
+                                 }
+                             });
+                         }
+                     }
                     break;
                  case 2:
-                    bottomSheetView = inflater.inflate(R.layout.bottom_sheet_3, null);
+                     if(destinationList3.isEmpty()){
+                         bottomSheetView = inflater.inflate(R.layout.bottom_sheet_3, null);
+                     }
+                     else {
+                         destinationAdapter =
+                                 new PlanListAdapter(this,
+                                         R.layout.destination_list,
+                                         R.id.destination_name,
+                                         destinationList3
+                                 );
+
+                         destinationListView = new DynamicListView(this);
+                         destinationListView.setDestinationList(destinationList3);
+                         destinationListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+                         destinationListView.setAdapter(destinationAdapter);
+                         destinationListView.setDescendantFocusability(FOCUS_BLOCK_DESCENDANTS);
+
+                         bottomSheetView = inflater.inflate(R.layout.plan_window_3, null);
+
+                         LinearLayout ll = (LinearLayout) bottomSheetView.findViewById(R.id.destination);
+                         Button replace = (Button) ll.findViewById(R.id.btn_save_3);
+                         ll.removeView(replace);
+                         ll.addView(destinationListView);
+                         ll.addView(replace);
+
+                         destinationListView.setOnTouchListener(new View.OnTouchListener() {
+                             // Setting on Touch Listener for handling the touch inside ScrollView
+                             @Override
+                             public boolean onTouch(View v, MotionEvent event) {
+                                 // Disallow the touch request for parent scroll on touch of child view
+                                 v.getParent().requestDisallowInterceptTouchEvent(true);
+                                 return false;
+                             }
+                         });
+
+                         ImageButton delete = (ImageButton) bottomSheetView.findViewById(R.id.delete3);
+
+                         if (delete != null) {
+                             delete.setOnClickListener(new View.OnClickListener() {
+                                 public void onClick(View v) {
+                                     if (ids.size() > 0) {
+                                         for (int i = 0; i < ids.size(); i++) {
+                                             destinationList3.remove(ids.get(i));
+                                         }
+                                         destinationAdapter.notifyDataSetChanged();
+                                     }
+                                 }
+                             });
+                         }
+                     }
                     break;
                  case 3:
-                    bottomSheetView = inflater.inflate(R.layout.bottom_sheet_4, null);
+                     if(destinationList4.isEmpty()){
+                         bottomSheetView = inflater.inflate(R.layout.bottom_sheet_4, null);
+                     }
+                     else {
+                         destinationAdapter =
+                                 new PlanListAdapter(this,
+                                         R.layout.destination_list,
+                                         R.id.destination_name,
+                                         destinationList4
+                                 );
+
+                         destinationListView = new DynamicListView(this);
+                         destinationListView.setDestinationList(destinationList4);
+                         destinationListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+                         destinationListView.setAdapter(destinationAdapter);
+                         destinationListView.setDescendantFocusability(FOCUS_BLOCK_DESCENDANTS);
+
+                         bottomSheetView = inflater.inflate(R.layout.plan_window_4, null);
+
+                         LinearLayout ll = (LinearLayout) bottomSheetView.findViewById(R.id.destination);
+                         Button replace = (Button) ll.findViewById(R.id.btn_save_4);
+                         ll.removeView(replace);
+                         ll.addView(destinationListView);
+                         ll.addView(replace);
+
+                         destinationListView.setOnTouchListener(new View.OnTouchListener() {
+                             // Setting on Touch Listener for handling the touch inside ScrollView
+                             @Override
+                             public boolean onTouch(View v, MotionEvent event) {
+                                 // Disallow the touch request for parent scroll on touch of child view
+                                 v.getParent().requestDisallowInterceptTouchEvent(true);
+                                 return false;
+                             }
+                         });
+
+                         ImageButton delete = (ImageButton) bottomSheetView.findViewById(R.id.delete4);
+
+                         if (delete != null) {
+                             delete.setOnClickListener(new View.OnClickListener() {
+                                 public void onClick(View v) {
+                                     if (ids.size() > 0) {
+                                         for (int i = 0; i < ids.size(); i++) {
+                                             destinationList4.remove(ids.get(i));
+                                         }
+                                         destinationAdapter.notifyDataSetChanged();
+                                     }
+                                 }
+                             });
+                         }
+                     }
                     break;
                 }
             }

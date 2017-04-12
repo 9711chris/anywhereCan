@@ -42,45 +42,12 @@
 
             <!--this part dynamically will be added view-->
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:background="@color/destination">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Destination 1"
-                    android:layout_margin="10dp"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:textSize="16sp"/>
-
-                <CheckBox
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/checkbox1"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginRight="10dp" />
-
-                <ImageView
-                    android:id="@+id/toNavigation"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:layout_centerVertical="true"
-                    android:layout_toLeftOf="@id/checkbox1"
-                    android:src="@drawable/tonavigation" />
-
-            </RelativeLayout>
-
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="save!"/>
+                android:text="save!"
+                android:id="@+id/btn_save_2"/>
             <!--android:visibility="gone"/>-->
 
         </LinearLayout>
@@ -95,6 +62,7 @@
             <!--android:visibility="gone"/>-->
 
             <ImageButton
+                android:id="@+id/delete2"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/delete"
@@ -103,6 +71,7 @@
             <!--android:onClick="deleteChecked"-->
 
             <ImageButton
+                android:id="@+id/default2"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/defaultdir"
@@ -110,6 +79,7 @@
             <!--android:onClick="defaultDirections"-->
 
             <ImageButton
+                android:id="@+id/chain2"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/chain"
@@ -117,6 +87,7 @@
             <!--android:onClick="chainDirections"-->
 
             <ImageButton
+                android:id="@+id/recommend2"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/recommend"

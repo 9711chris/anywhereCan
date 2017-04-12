@@ -80,7 +80,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="save!"/>
+                android:text="save!"
+                android:id="@+id/btn_save_4"/>
             <!--android:visibility="gone"/>-->
 
         </LinearLayout>
@@ -95,6 +96,7 @@
             <!--android:visibility="gone"/>-->
 
             <ImageButton
+                android:id="@+id/delete4"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/delete"
@@ -103,6 +105,7 @@
             <!--android:onClick="deleteChecked"-->
 
             <ImageButton
+                android:id="@+id/default4"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/defaultdir"
@@ -110,6 +113,7 @@
             <!--android:onClick="defaultDirections"-->
 
             <ImageButton
+                android:id="@+id/chain4"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/chain"
@@ -117,6 +121,7 @@
             <!--android:onClick="chainDirections"-->
 
             <ImageButton
+                android:id="@+id/recommend4"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/recommend"
