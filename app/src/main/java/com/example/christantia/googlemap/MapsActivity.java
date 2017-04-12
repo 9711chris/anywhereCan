@@ -195,6 +195,12 @@ public class MapsActivity extends AppCompatActivity implements
         bindViews();
         initState();
 
+        loading = new ProgressDialog(this);
+        loading.setMessage("Loading data from internet... Please wait.");
+        loading.setIndeterminate(true);
+        loading.setCanceledOnTouchOutside(false);
+
+        new FetchData().execute();
 
         search.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -961,9 +967,10 @@ public class MapsActivity extends AppCompatActivity implements
         System.out.println("connection Failed!");
     }
 
-    private class FetchData extends AsyncTask<Context, Void, Void> {
+    private class FetchData extends AsyncTask<Void, Void, Void> {
         @Override
-        protected Void doInBackground(Context... contexts) {
+        protected Void doInBackground(Void... voids) {
+            Log.d("Prab","ANjeng");
             ObtainMapsData.saveAllKmlToDb(getApplicationContext(), mDbHelper);
             populateList();
 
