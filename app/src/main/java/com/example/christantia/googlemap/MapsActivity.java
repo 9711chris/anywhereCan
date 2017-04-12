@@ -511,8 +511,7 @@ public class MapsActivity extends AppCompatActivity implements
         view.setBackgroundColor(0xffe6ffd8);
         view.setLayoutParams(new LinearLayout.LayoutParams(Toolbar.LayoutParams.MATCH_PARENT, Toolbar.LayoutParams.WRAP_CONTENT));
         a.addView(view);
-        list.addView(a);
-        View plus = list.findViewById(DestinationListView.PLUS_INT);
+        View plus = view.findViewById(DestinationListView.PLUS_INT);
         plus.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -522,7 +521,7 @@ public class MapsActivity extends AppCompatActivity implements
                 return true;
             }
         });
-        View arrow = list.findViewById(DestinationListView.ARROW_INT);
+        View arrow = view.findViewById(DestinationListView.ARROW_INT);
         arrow.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -533,6 +532,7 @@ public class MapsActivity extends AppCompatActivity implements
                 return true;
             }
         });
+        list.addView(a);
         return false;
     }
 
@@ -551,7 +551,7 @@ public class MapsActivity extends AppCompatActivity implements
         //process address string through geolocation + show onmap
 
         //initialize relative layout
-        View back = (View) findViewById(R.id.back);
+        View back = (View) findViewById(R.id.back_distance);
         View addPlan = (View) findViewById(R.id.addPlan);
         back.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -611,23 +611,7 @@ public class MapsActivity extends AppCompatActivity implements
         if (mSlidingLayer.getVisibility() == View.INVISIBLE) {
             titleBar.setText(type);
             toolbarTop.setVisibility(View.VISIBLE);
-            switch (type) {
-                case "Hotels":
-                    mSlidingLayer.setVisibility(View.VISIBLE);
-                    break;
-                case "Eateries":
-                    mSlidingLayer.setVisibility(View.VISIBLE);
-                    break;
-                case "Parks":
-                    mSlidingLayer.setVisibility(View.VISIBLE);
-                    break;
-                case "Museums":
-                    mSlidingLayer.setVisibility(View.VISIBLE);
-                    break;
-                case "Sports":
-                    mSlidingLayer.setVisibility(View.VISIBLE);
-                    break;
-            }
+            mSlidingLayer.setVisibility(View.VISIBLE);
         } else {
             mSlidingLayer.setVisibility(View.INVISIBLE);
             toolbarTop.setVisibility(View.INVISIBLE);

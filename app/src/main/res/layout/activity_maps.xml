@@ -133,7 +133,7 @@
         android:background="@android:color/holo_green_light">
 
         <View
-            android:id="@+id/back"
+            android:id="@+id/back_distance"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:background="@drawable/left_arrow"
@@ -145,7 +145,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/distance"
-            android:layout_toRightOf="@id/back"
+            android:layout_toRightOf="@id/back_distance"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="2dp"
             android:textStyle="bold"
@@ -164,6 +164,7 @@
             android:id="@+id/directionList"
             android:layout_width="match_parent"
             android:layout_height="250dp"
+            android:orientation="vertical"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
             android:layout_marginLeft="10dp"
@@ -217,32 +218,36 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/holo_green_light">
-
-            <TextView
-                android:id="@+id/swipeText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:gravity="center"
-                android:drawablePadding="15dip"
-                android:paddingBottom="80dp"
-                android:textSize="17sp"
-                android:textColor="@android:color/primary_text_dark"/>
-
-            <ScrollView
+            android:background="@drawable/sliding_background">
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <LinearLayout
-                    android:id="@+id/destination_list"
-                    android:orientation="vertical"
+                android:layout_height="460dp"
+                android:background="@android:color/holo_green_light">
+
+                <TextView
+                    android:id="@+id/swipeText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:drawablePadding="15dip"
+                    android:paddingBottom="80dp"
+                    android:textSize="17sp"
+                    android:textColor="@android:color/primary_text_dark"/>
+
+                <ScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="250dp">
-                </LinearLayout>
-            </ScrollView>
+                    android:layout_height="match_parent">
+                    <LinearLayout
+                        android:id="@+id/destination_list"
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp">
+                    </LinearLayout>
+                </ScrollView>
 
+            </RelativeLayout>
         </RelativeLayout>
-
     </com.wunderlist.slidinglayer.SlidingLayer>
 
     <RelativeLayout
