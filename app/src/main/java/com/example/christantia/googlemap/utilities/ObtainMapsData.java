@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.Address;
+import android.location.Geocoder;
 import android.util.Log;
 
 import com.example.christantia.googlemap.data.LocationsContract;
@@ -101,6 +103,45 @@ public class ObtainMapsData {
         return result;
     }
 
+    private static void getAddressData(Context context, SQLiteDatabase db){
+        Cursor resultSet = db.rawQuery("SELECT * FROM " + LocationsContract.LocationsEntry.TABLE_NAME, null);
+        resultSet.moveToFirst();
+        while (!resultSet.isAfterLast()) {
+            String name = resultSet.getString(1);
+            String category = resultSet.getString(2);
+            String coordinates = resultSet.getString(3);
+
+            System.out.println("ANJENG NAME: " + name);
+            System.out.println("ANJENG COORDINATES: " + coordinates);
+
+            String longitude = coordinates.split(",")[0];
+            String latitude = coordinates.split(",")[1];
+
+            System.out.println("ANJENG LOKASI: " + latitude + " " + longitude);
+            String address = resultSet.getString(4);
+            System.out.println("ANJENG adress = " + address);
+            if (address == null) {
+
+                Geocoder geoCoder = new Geocoder(context);
+                List<Address> matches = null;
+                try {
+                    matches = geoCoder.getFromLocation(Double.parseDouble(latitude), Double.parseDouble(longitude), 1);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Address bestMatch = (matches.isEmpty() ? null : matches.get(0));
+                if (bestMatch != null)
+                    address = bestMatch.getAddressLine(0);
+                System.out.println("ANJENG new address = " + address);
+                db.execSQL("UPDATE " + LocationsContract.LocationsEntry.TABLE_NAME +
+                        " SET address = \"" + address + "\"" +
+                        " WHERE " + LocationsContract.LocationsEntry._ID + " = " + resultSet.getInt(0));
+
+            }
+            resultSet.moveToNext();
+        }
+    }
+
     public static void saveAllKmlToDb(Context context, LocationsDbHelper mDbHelper) {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
@@ -127,6 +168,7 @@ public class ObtainMapsData {
                     e.printStackTrace();
                 }
             }
+            getAddressData(context,db);
         }
     }
 }

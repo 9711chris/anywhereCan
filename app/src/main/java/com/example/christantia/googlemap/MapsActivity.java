@@ -227,7 +227,6 @@ public class MapsActivity extends AppCompatActivity implements
         //add new list item programatically + code the buttons
         addNewItemInList(list, "Name", "Address"); //dummy content
 */
-        populateList();
 
         //initialize list first and show using this iteration
         /*for (DestinationInfo cur : infos)
@@ -301,35 +300,35 @@ public class MapsActivity extends AppCompatActivity implements
 
             String name = resultSet.getString(1);
             String category = resultSet.getString(2);
-            String coordinates = resultSet.getString(3);
-
-            System.out.println("ANJENG NAME: " + name);
-            System.out.println("ANJENG COORDINATES: " + coordinates);
-
-            String longitude = coordinates.split(",")[0];
-            String latitude = coordinates.split(",")[1];
-
-            System.out.println("ANJENG LOKASI: " + latitude + " " + longitude);
             String address = resultSet.getString(4);
-            System.out.println("ANJENG adress = "+ address);
-            if ( address == null ) {
 
-                Geocoder geoCoder = new Geocoder(getApplicationContext());
-                List<Address> matches = null;
-                try {
-                    matches = geoCoder.getFromLocation(Double.parseDouble(latitude), Double.parseDouble(longitude), 1);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                Address bestMatch = (matches.isEmpty() ? null : matches.get(0));
-                if(bestMatch!=null)
-                    address = bestMatch.getAddressLine(0);
-                System.out.println("ANJENG new address = " +address);
-                db.execSQL("UPDATE " + LocationsContract.LocationsEntry.TABLE_NAME +
-                        " SET address = \"" + address + "\"" +
-                        " WHERE " +  LocationsContract.LocationsEntry._ID + " = " + resultSet.getInt(0) );
-
-            }
+//            System.out.println("ANJENG NAME: " + name);
+//            System.out.println("ANJENG COORDINATES: " + coordinates);
+//
+//            String longitude = coordinates.split(",")[0];
+//            String latitude = coordinates.split(",")[1];
+//
+//            System.out.println("ANJENG LOKASI: " + latitude + " " + longitude);
+//            String address = resultSet.getString(4);
+//            System.out.println("ANJENG adress = "+ address);
+//            if ( address == null ) {
+//
+//                Geocoder geoCoder = new Geocoder(getApplicationContext());
+//                List<Address> matches = null;
+//                try {
+//                    matches = geoCoder.getFromLocation(Double.parseDouble(latitude), Double.parseDouble(longitude), 1);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                Address bestMatch = (matches.isEmpty() ? null : matches.get(0));
+//                if(bestMatch!=null)
+//                    address = bestMatch.getAddressLine(0);
+//                System.out.println("ANJENG new address = " +address);
+//                db.execSQL("UPDATE " + LocationsContract.LocationsEntry.TABLE_NAME +
+//                        " SET address = \"" + address + "\"" +
+//                        " WHERE " +  LocationsContract.LocationsEntry._ID + " = " + resultSet.getInt(0) );
+//
+//            }
 
             if (category.equals("HAWKERCENTRE"))
                 infoHawkers.add(new DestinationInfo(name, address));
@@ -758,6 +757,8 @@ public class MapsActivity extends AppCompatActivity implements
         @Override
         protected Void doInBackground(Context... contexts) {
             ObtainMapsData.saveAllKmlToDb(getApplicationContext(), mDbHelper);
+            populateList();
+
             return null;
         }
 
