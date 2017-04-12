@@ -49,9 +49,14 @@ import android.support.design.widget.BottomSheetDialog;
 import android.location.LocationManager;
 import android.location.LocationListener;
 
+import com.directions.route.AbstractRouting;
+import com.directions.route.Segment;
 import com.example.christantia.googlemap.data.LocationsContract;
 import com.example.christantia.googlemap.data.LocationsDbHelper;
+import com.example.christantia.googlemap.model.Destination;
+import com.example.christantia.googlemap.model.MyGoogleAPI;
 import com.example.christantia.googlemap.utilities.ObtainMapsData;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
@@ -75,7 +80,8 @@ import java.util.List;
 public class MapsActivity extends AppCompatActivity implements
         GoogleMap.OnMyLocationButtonClickListener,
         OnMapReadyCallback,
-        ActivityCompat.OnRequestPermissionsResultCallback {
+        ActivityCompat.OnRequestPermissionsResultCallback ,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     LocationsDbHelper mDbHelper = new LocationsDbHelper(this);
 
@@ -83,6 +89,8 @@ public class MapsActivity extends AppCompatActivity implements
     private UiSettings mUiSettings;
     private SlidingLayer mSlidingLayer;
     private RelativeLayout directions;
+    private Location mLastLocation;
+    private MyGoogleAPI myGoogleAPI;
 
    /* public enum Toolbars {
         HOTELS(R.id.toolbarTop), EATERIES(R.id.toolbarTop), PARK(R.id.toolbarTop), YAHOO(20), ATT(25);
@@ -113,14 +121,14 @@ public class MapsActivity extends AppCompatActivity implements
     private LinearLayout hotelLayer;
     private LatLng updatedLng;
     AlertDialog.Builder builder;
-    private String tobeShownonMap;
-    private String toPutonPlan;
+    private Destination tobeShownonMap;
+    private Destination toPutonPlan;
     int i = 0;
-    ArrayList<DestinationInfo> infoHawkers = new ArrayList<DestinationInfo>();
-    ArrayList<DestinationInfo> infoHotels = new ArrayList<DestinationInfo>();
-    ArrayList<DestinationInfo> infoParks = new ArrayList<DestinationInfo>();
-    ArrayList<DestinationInfo> infoMuseums = new ArrayList<DestinationInfo>();
-    ArrayList<DestinationInfo> infoSports = new ArrayList<DestinationInfo>();
+    ArrayList<Destination> infoHawkers = new ArrayList<Destination>();
+    ArrayList<Destination> infoHotels = new ArrayList<Destination>();
+    ArrayList<Destination> infoParks = new ArrayList<Destination>();
+    ArrayList<Destination> infoMuseums = new ArrayList<Destination>();
+    ArrayList<Destination> infoSports = new ArrayList<Destination>();
 
 
     //shelina's
@@ -177,13 +185,15 @@ public class MapsActivity extends AppCompatActivity implements
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
             layoutParams.setMargins(0, 0, 300, 300);
         }
-        /*if (mGoogleApiClient == null) {
+
+        //mgoogleapiclient
+        if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
                     .build();
-        }*/
+        }
         bindViews();
         initState();
 
@@ -238,9 +248,9 @@ public class MapsActivity extends AppCompatActivity implements
                 returnToMap();
                 LinearLayout list = (LinearLayout) findViewById(R.id.destination_list);
                 list.removeAllViews();
-                for (DestinationInfo cur : infoHotels)
-                    addNewItemInList(list, cur.getName(), cur.getAddress());
-
+                for (Destination cur : infoHotels) {
+                    addNewItemInList(list, cur);
+                }
                 //intialize(1);
                 //resetslidinglayer;
                 setClicks("Hotels");
@@ -297,49 +307,25 @@ public class MapsActivity extends AppCompatActivity implements
         Cursor resultSet = db.rawQuery("SELECT * FROM " + LocationsContract.LocationsEntry.TABLE_NAME, null);
         resultSet.moveToFirst();
         while (!resultSet.isAfterLast()) {
-
+            int id = resultSet.getInt(0);
             String name = resultSet.getString(1);
             String category = resultSet.getString(2);
+            String coordinates = resultSet.getString(3);
             String address = resultSet.getString(4);
 
-//            System.out.println("ANJENG NAME: " + name);
-//            System.out.println("ANJENG COORDINATES: " + coordinates);
-//
-//            String longitude = coordinates.split(",")[0];
-//            String latitude = coordinates.split(",")[1];
-//
-//            System.out.println("ANJENG LOKASI: " + latitude + " " + longitude);
-//            String address = resultSet.getString(4);
-//            System.out.println("ANJENG adress = "+ address);
-//            if ( address == null ) {
-//
-//                Geocoder geoCoder = new Geocoder(getApplicationContext());
-//                List<Address> matches = null;
-//                try {
-//                    matches = geoCoder.getFromLocation(Double.parseDouble(latitude), Double.parseDouble(longitude), 1);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//                Address bestMatch = (matches.isEmpty() ? null : matches.get(0));
-//                if(bestMatch!=null)
-//                    address = bestMatch.getAddressLine(0);
-//                System.out.println("ANJENG new address = " +address);
-//                db.execSQL("UPDATE " + LocationsContract.LocationsEntry.TABLE_NAME +
-//                        " SET address = \"" + address + "\"" +
-//                        " WHERE " +  LocationsContract.LocationsEntry._ID + " = " + resultSet.getInt(0) );
-//
-//            }
+            Destination result = new Destination (id,Double.parseDouble(coordinates.split(",")[0]),
+                    Double.parseDouble(coordinates.split(",")[1]),address,name,category);
 
             if (category.equals("HAWKERCENTRE"))
-                infoHawkers.add(new DestinationInfo(name, address));
+                infoHawkers.add(result);
             else if (category.equals("HOTELS"))
-                infoHotels.add(new DestinationInfo(name, address));
+                infoHotels.add(result);
             else if (category.equals("NATIONALPARKS"))
-                infoParks.add(new DestinationInfo(name, address));
+                infoParks.add(result);
             else if (category.equals("MUSEUM"))
-                infoMuseums.add(new DestinationInfo(name, address));
+                infoMuseums.add(result);
             else if (category.equals("PLAYSG"))
-                infoSports.add(new DestinationInfo(name, address));
+                infoSports.add(result);
 
             System.out.println("CATEGORY ANJENG " + category);
 
@@ -403,6 +389,42 @@ public class MapsActivity extends AppCompatActivity implements
         return true;
     }
 
+    //only run when last location is known
+    @Override
+    public void onConnected(Bundle connectionHint) {
+       // for(int i=1;i<=2123123123;i++){int a=0;a=a+1;}
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            System.out.println("ANJENG connected mlast");
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        }
+        if(mLastLocation != null)System.out.println("ANJENG mlast != null");
+        LatLng singapore = new LatLng(1.3521, 103.8198);
+        LatLng current=singapore;
+        if(mLastLocation != null)
+            current = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        mMap.addMarker(new MarkerOptions().position(current).title("i'm here marker in Singapore"));
+        //Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        //if (updatedLng != null)
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 10.0f));
+    }
+
+    @Override
+    public void onConnectionSuspended(int a)
+    {
+        System.out.println("connection suspended !");
+    }
+    protected void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         //mGoogleApiClient.connect();
@@ -410,7 +432,7 @@ public class MapsActivity extends AppCompatActivity implements
         mMap = googleMap;
         mMap.setPadding(0, 0, 0, 150);
         mUiSettings = (UiSettings) mMap.getUiSettings();
-
+        myGoogleAPI = new MyGoogleAPI(MapsActivity.this,this,mMap);
         // Keep the UI Settings state in sync with the checkboxes.
         mUiSettings.setZoomControlsEnabled(true);
         mUiSettings.setCompassEnabled(true);
@@ -438,11 +460,14 @@ public class MapsActivity extends AppCompatActivity implements
         // Add a marker in Sydney and move the camera
 
         LatLng singapore = new LatLng(1.3521, 103.8198);
-        //LatLng current = new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude());
-        //mMap.addMarker(new MarkerOptions().position(singapore).title("Marker in Singapore"));
+        LatLng current=singapore;
+
+        if(mLastLocation != null)
+            current = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        mMap.addMarker(new MarkerOptions().position(current).title("i'm here marker in Singapore"));
         //Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         //if (updatedLng != null)
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(singapore, 10.0f));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 10.0f));
     }
 
     @Override
@@ -479,9 +504,13 @@ public class MapsActivity extends AppCompatActivity implements
             // Permission to access the location is missing.
             PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
                     Manifest.permission.ACCESS_FINE_LOCATION, true);
+
         } else if (mMap != null) {
             // Access to the location has been granted to the app.
+
             mMap.setMyLocationEnabled(true);
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                    mGoogleApiClient);
         }
     }
 
@@ -502,11 +531,10 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
-    private boolean addNewItemInList(LinearLayout list, String name, final String address) {
+    private boolean addNewItemInList(LinearLayout list, final Destination cur) {
         LinearLayout a = new LinearLayout(this);
         a.setOrientation(LinearLayout.HORIZONTAL);
-        DestinationInfo info = new DestinationInfo(name, address);
-        DestinationListView view = new DestinationListView(this, info);
+        DestinationListView view = new DestinationListView(this, cur);
         view.setBackgroundColor(0xffe6ffd8);
         view.setLayoutParams(new LinearLayout.LayoutParams(Toolbar.LayoutParams.MATCH_PARENT, Toolbar.LayoutParams.WRAP_CONTENT));
         a.addView(view);
@@ -514,9 +542,9 @@ public class MapsActivity extends AppCompatActivity implements
         plus.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                Log.d(TAG, "onTouch entered");
+                Log.d(TAG, "onTouch entered plus");
                 returnToMap();
-                toPutonPlan = address;
+                toPutonPlan = cur;
                 return true;
             }
         });
@@ -524,9 +552,9 @@ public class MapsActivity extends AppCompatActivity implements
         arrow.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                Log.d(TAG, "onTouch entered");
+                Log.d(TAG, "onTouch entered arrow");
                 returnToMap();
-                tobeShownonMap = address;
+                tobeShownonMap = cur;
                 showDirectionOnMap(tobeShownonMap);
                 return true;
             }
@@ -535,20 +563,15 @@ public class MapsActivity extends AppCompatActivity implements
         return false;
     }
 
-    private void returnToMap() {
-
-        if (mSlidingLayer.isOpened()) {
-            mSlidingLayer.closeLayer(true);
-        }
-        mSlidingLayer.setVisibility(View.INVISIBLE);
-        toolbarTop.setVisibility(View.INVISIBLE);
-        searchBar.setVisibility(View.INVISIBLE);
-        directions.setVisibility(View.INVISIBLE);
-    }
-
-    private void showDirectionOnMap(final String tobeShownonMap) {
-        //process address string through geolocation + show onmap
-
+    private void showDirectionOnMap(final Destination tobeShownonMap){
+        System.out.println("NEED ROUTING ANJENG location ="+mLastLocation.getLatitude()+
+        " ,"+mLastLocation.getLongitude() );
+        System.out.println("NEED ROUTING destination ="+tobeShownonMap.getLatitude()+
+                " ,"+tobeShownonMap.getLongitude() );
+        myGoogleAPI.displayRoute(tobeShownonMap,mLastLocation,
+                AbstractRouting.TravelMode.DRIVING,
+                new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()),
+                new LatLng(tobeShownonMap.getLatitude(),tobeShownonMap.getLongitude()));
         //initialize relative layout
         View back = (View) findViewById(R.id.back_distance);
         View addPlan = (View) findViewById(R.id.addPlan);
@@ -567,44 +590,55 @@ public class MapsActivity extends AppCompatActivity implements
             }
         });
 
-        //list out directions
-        final LinearLayout directionList = (LinearLayout) findViewById(R.id.directionList);
         View walking = findViewById(R.id.walking);
         View publicTrans = findViewById(R.id.publictrans);
         View car = findViewById(R.id.car);
-        //create 3 arrays, each for
-        //iterate through direction list create textviews in array
-        final TextView tv = new TextView(this); //dummy content
-        tv.setTextSize(20);
-        tv.setText("Direction");
-        LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(Toolbar.LayoutParams.WRAP_CONTENT, Toolbar.LayoutParams.WRAP_CONTENT);
-        layout.setMargins(10, 10, 0, 0);
-        tv.setLayoutParams(layout);
         //add different array according to option clicked
         walking.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (tv.getParent() != null)
-                    ((ViewGroup) tv.getParent()).removeView(tv); //
-                directionList.addView(tv);
+                myGoogleAPI.displayRoute(tobeShownonMap,mLastLocation,
+                        AbstractRouting.TravelMode.WALKING,
+                        new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()),
+                        new LatLng(tobeShownonMap.getLatitude(),tobeShownonMap.getLongitude()));
                 return true;
             }
         });
         publicTrans.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                myGoogleAPI.displayRoute(tobeShownonMap,mLastLocation,
+                        AbstractRouting.TravelMode.TRANSIT,
+                        new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()),
+                        new LatLng(tobeShownonMap.getLatitude(),tobeShownonMap.getLongitude()));
                 return true;
             }
         });
         car.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                return true;
+                myGoogleAPI.displayRoute(tobeShownonMap,mLastLocation,
+                        AbstractRouting.TravelMode.DRIVING,
+                        new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()),
+                        new LatLng(tobeShownonMap.getLatitude(),tobeShownonMap.getLongitude()));return true;
             }
         });
 
+
         directions.setVisibility(View.VISIBLE);
     }
+
+    private void returnToMap() {
+
+        if (mSlidingLayer.isOpened()) {
+            mSlidingLayer.closeLayer(true);
+        }
+        mSlidingLayer.setVisibility(View.INVISIBLE);
+        toolbarTop.setVisibility(View.INVISIBLE);
+        searchBar.setVisibility(View.INVISIBLE);
+        directions.setVisibility(View.INVISIBLE);
+    }
+
 
     private void setClicks(String type) {
         if (mSlidingLayer.getVisibility() == View.INVISIBLE) {
@@ -751,6 +785,11 @@ public class MapsActivity extends AppCompatActivity implements
             if(buttonPlanId!=3) parent.addView(addPlan);
             if(buttonPlanId==3) buttonPlanId=0;
         }
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        System.out.println("connection Failed!");
     }
 
     private class FetchData extends AsyncTask<Context, Void, Void> {

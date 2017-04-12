@@ -8,6 +8,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.christantia.googlemap.model.Destination;
+
 /**
  * Created by Christantia on 3/21/2017.
  */
@@ -15,7 +17,7 @@ import android.widget.TextView;
 public class DestinationListView extends LinearLayout {
     public final static int PLUS_INT = 0;
     public final static int ARROW_INT = 1;
-    public DestinationListView(Context context, DestinationInfo info) {
+    public DestinationListView(Context context, Destination info) {
         super(context);
         setOrientation(LinearLayout.HORIZONTAL);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
