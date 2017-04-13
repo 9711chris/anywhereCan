@@ -87,6 +87,14 @@ public class MyGoogleAPI implements com.directions.route.RoutingListener{
         //while(!done);
         progressDialog.dismiss();
         System.out.println("CLEAR ANJENGG COEG MyGoogleAPI!");
+        mMap.clear();
+        for(int i=0;i<waypoints.length;i++)
+        {
+            // Start marker
+            MarkerOptions options = new MarkerOptions();
+            options.position(waypoints[i]);
+            mMap.addMarker(options);
+        }
         // Start marker
         MarkerOptions options = new MarkerOptions();
         options.position(start);

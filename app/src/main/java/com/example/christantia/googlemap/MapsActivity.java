@@ -828,7 +828,8 @@ public class MapsActivity extends AppCompatActivity implements
             public void onClick(View v) {
 
                 toPutonPlan = tobeShownonMap;
-
+                addDestinationToPlan(tobeShownonMap);
+                returnToMap();
             }
         });
         /*addPlan.setOnTouchListener(new View.OnTouchListener() {
