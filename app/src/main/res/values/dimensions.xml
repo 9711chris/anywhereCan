@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ dimensions.xml
-  ~ 
+  ~
   ~ Copyright (C) 2013 6 Wunderkinder GmbH
   ~
   ~ Author: Jose L Ugia - @Jl_Ugia
@@ -27,4 +27,10 @@
     <dimen name="layer_size">300dp</dimen>
     <dimen name="preview_offset_distance">500dp</dimen>
     <dimen name="offset_distance">250dp</dimen>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="tab_max_width">264dp</dimen>
+    <dimen name="tab_padding_bottom">16dp</dimen>
+    <dimen name="tab_label">14sp</dimen>
+    <dimen name="custom_tab_layout_height">72dp</dimen>
 </resources>

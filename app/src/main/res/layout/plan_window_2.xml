@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/bottom2">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal|center_vertical"
+        android:background="@color/panel"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleX="1.2"
+            android:scaleY="1.2"
+            android:textAlignment="center"
+            android:text="Plan 2"
+            android:textStyle="bold"
+            android:textAllCaps="true" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="6">
+
+        <LinearLayout
+            android:id="@+id/destination"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:orientation="vertical"
+            android:layout_weight="5">
+
+            <!--this part dynamically will be added view-->
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="save!"
+                android:id="@+id/btn_save_2"
+                android:onClick="savePlan"/>
+            <!--android:visibility="gone"/>-->
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/rightButtons"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:padding="0dp">
+            <!--android:visibility="gone"/>-->
+
+            <ImageButton
+                android:id="@+id/delete2"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/delete"
+                android:layout_marginTop="9dp"
+                android:layout_marginBottom="5dp" />
+
+            <ImageButton
+                android:id="@+id/default2"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/defaultdir"
+                android:layout_marginBottom="5dp"
+                android:onClick="defaultDirections"/>
+
+            <ImageButton
+                android:id="@+id/chain2"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/chain"
+                android:layout_marginBottom="5dp"
+                android:onClick="chainDirections"/>
+
+            <ImageButton
+                android:id="@+id/recommend2"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/recommend"
+                android:layout_marginBottom="5dp"
+                android:onClick="chainRecommended"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
+
