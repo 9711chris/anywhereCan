@@ -29,8 +29,6 @@ import java.util.Map;
 
 public class ObtainMapsData {
 
-    private static Context context;
-
     public static Map<String,String> urlStrings = createMap();
     private static Map<String, String> createMap()
     {
