@@ -45,7 +45,7 @@ import com.example.christantia.googlemap.data.LocationsContract;
 import com.example.christantia.googlemap.data.LocationsDbHelper;
 import com.example.christantia.googlemap.model.Destination;
 import com.example.christantia.googlemap.utilities.MyGoogleAPI;
-import com.example.christantia.googlemap.model.MySQLiteDB;
+import com.example.christantia.googlemap.data.MySQLiteDB;
 import com.example.christantia.googlemap.model.Planner;
 import com.example.christantia.googlemap.utilities.ObtainMapsData;
 import com.google.android.gms.common.ConnectionResult;
