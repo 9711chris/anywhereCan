@@ -1,4 +1,4 @@
-package com.example.christantia.googlemap.model;
+package com.example.christantia.googlemap.utilities;
 
 /**
  * Created by Christantia on 4/12/2017.
