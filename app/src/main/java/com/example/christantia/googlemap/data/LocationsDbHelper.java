@@ -35,14 +35,14 @@ public class LocationsDbHelper extends SQLiteOpenHelper{
                 "); ";
 
         final String SQL_CREATE_PLAN_LOCATION_RELATIONS_TABLE = "CREATE TABLE " +
-                PlanLocationRelationsEntry.TABLE_NAME + " (" +
-                PlanLocationRelationsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                PlanLocationRelationsEntry.COLUMN_PLAN_ID + " INTEGER NOT NULL, " +
-                PlanLocationRelationsEntry.COLUMN_LOCATION_ID + " INTEGER NOT NULL, " +
-                PlanLocationRelationsEntry.COLUMN_SEQ + " INTEGER," +
-                " FOREIGN KEY (" + PlanLocationRelationsEntry.COLUMN_PLAN_ID + ") REFERENCES " +
+                PlanLocationsEntry.TABLE_NAME + " (" +
+                PlanLocationsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                PlanLocationsEntry.COLUMN_PLAN_ID + " INTEGER NOT NULL, " +
+                PlanLocationsEntry.COLUMN_LOCATION_ID + " INTEGER NOT NULL, " +
+                PlanLocationsEntry.COLUMN_SEQ + " INTEGER," +
+                " FOREIGN KEY (" + PlanLocationsEntry.COLUMN_PLAN_ID + ") REFERENCES " +
                 PlansEntry.TABLE_NAME + "(" + PlansEntry._ID + ") ON UPDATE CASCADE ON DELETE CASCADE, " +
-                " FOREIGN KEY (" + PlanLocationRelationsEntry.COLUMN_LOCATION_ID + ") REFERENCES " +
+                " FOREIGN KEY (" + PlanLocationsEntry.COLUMN_LOCATION_ID + ") REFERENCES " +
                 LocationsEntry.TABLE_NAME + "(" + LocationsEntry._ID + ") ON UPDATE CASCADE ON DELETE CASCADE" +
                 "); ";
 
@@ -69,7 +69,7 @@ public class LocationsDbHelper extends SQLiteOpenHelper{
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + LocationsEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + PlansEntry.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + PlanLocationRelationsEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + PlanLocationsEntry.TABLE_NAME);
 
         onCreate(db);
     }

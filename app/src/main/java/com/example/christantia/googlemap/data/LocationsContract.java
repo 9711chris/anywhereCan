@@ -22,7 +22,7 @@ public final class LocationsContract {
         public static final String TABLE_NAME = "plans";
     }
 
-    public static class PlanLocationRelationsEntry implements BaseColumns {
+    public static class PlanLocationsEntry implements BaseColumns {
         public static final String TABLE_NAME = "planLocationRelations";
         public static final String COLUMN_PLAN_ID = "planId";
         public static final String COLUMN_LOCATION_ID = "locationId";

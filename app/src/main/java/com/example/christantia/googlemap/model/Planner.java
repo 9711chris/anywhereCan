@@ -6,30 +6,12 @@ package com.example.christantia.googlemap.model;
 
 import com.example.christantia.googlemap.data.LocationsDbHelper;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-
 import java.util.ArrayList;
-import com.directions.route.AbstractRouting;
-import com.directions.route.Route;
-import com.directions.route.RouteException;
-import com.directions.route.Routing;
-import com.directions.route.RoutingListener;
-import com.directions.route.Segment;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
+
+import com.example.christantia.googlemap.data.MyDBInterface;
+import com.example.christantia.googlemap.data.MySQLiteDB;
 
 
-import static android.content.Context.MODE_PRIVATE;
 import static android.database.sqlite.SQLiteDatabase.openOrCreateDatabase;
 
 /**

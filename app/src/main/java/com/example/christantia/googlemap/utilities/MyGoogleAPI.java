@@ -1,4 +1,4 @@
-package com.example.christantia.googlemap.model;
+package com.example.christantia.googlemap.utilities;
 
 /**
  * Created by Christantia on 4/12/2017.
@@ -44,12 +44,12 @@ public class MyGoogleAPI implements com.directions.route.RoutingListener{
     private List<Polyline> polylines = new ArrayList<>();
     private GoogleMap mMap;
     private ProgressDialog progressDialog;
-    LatLng start;
-    LatLng end;
-    Context c;
-    ArrayList<Route> route;
-    int shortestIndex;
-    Activity ac;
+    private LatLng start;
+    private LatLng end;
+    private Context c;
+    private ArrayList<Route> route;
+    private int shortestIndex;
+    private Activity ac;
 
     public MyGoogleAPI(Context context,Activity activity, GoogleMap mMap) {
         c = context;
@@ -188,8 +188,7 @@ public class MyGoogleAPI implements com.directions.route.RoutingListener{
     }
 
     public void onRoutingFailure(RouteException e){
-        System.out.println(e + " ANJENG !");
-        System.out.println("PRAB ANJENG , FAIL COEG !");
+        e.printStackTrace();
     }
 
     public void onRoutingStart(){

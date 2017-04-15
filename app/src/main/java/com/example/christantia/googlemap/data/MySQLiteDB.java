@@ -1,18 +1,14 @@
-package com.example.christantia.googlemap.model;
+package com.example.christantia.googlemap.data;
 
 /**
  * Created by Christantia on 4/12/2017.
  */
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.example.christantia.googlemap.data.LocationsContract;
-import com.example.christantia.googlemap.data.LocationsDbHelper;
-
-import android.database.sqlite.SQLiteDatabase.CursorFactory.*;
+import com.example.christantia.googlemap.model.Plan;
 
 import java.util.ArrayList;
 
@@ -41,13 +37,13 @@ public class MySQLiteDB implements MyDBInterface {
             int did = plan.getDestinationIds().get(i);
          //   mydatabase.execSQL("INSERT INTO planLocationRelations VALUES(" + plan.getId() + ", " + did + ", " +  i + ");");
             ContentValues values = new ContentValues();
-            values.put(LocationsContract.PlanLocationRelationsEntry
+            values.put(LocationsContract.PlanLocationsEntry
                     .COLUMN_PLAN_ID, plan.getId() );
-            values.put(LocationsContract.PlanLocationRelationsEntry
+            values.put(LocationsContract.PlanLocationsEntry
                     .COLUMN_LOCATION_ID, did);
-            values.put(LocationsContract.PlanLocationRelationsEntry
+            values.put(LocationsContract.PlanLocationsEntry
                     .COLUMN_SEQ, i);
-            mydatabase.insert(LocationsContract.PlanLocationRelationsEntry.TABLE_NAME, null, values);
+            mydatabase.insert(LocationsContract.PlanLocationsEntry.TABLE_NAME, null, values);
         }
     }
 
@@ -57,7 +53,7 @@ public class MySQLiteDB implements MyDBInterface {
             return new Plan();
         }
         //Cursor cursor = mydatabase.rawQuery("SELECT * FROM planLocationRelations WHERE planId = " + id + " ORDER BY seq ASC", null);
-        Cursor cursor = mydatabase.query(false, LocationsContract.PlanLocationRelationsEntry.TABLE_NAME,null,"planId = "+id ,null,null,null,"seq ASC",null);
+        Cursor cursor = mydatabase.query(false, LocationsContract.PlanLocationsEntry.TABLE_NAME,null,"planId = "+id ,null,null,null,"seq ASC",null);
         ArrayList<Integer> destinationIds = new ArrayList<>();
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             destinationIds.add(cursor.getInt(2));
